@@ -1,3 +1,0 @@
-#!/bin/bash
-# 從 README.md 提取最後一次動作摘要
-grep -A 1 "## 📌 最後一次動作摘要" /Users/cathy/Ai/family/README.md | tail -n 1

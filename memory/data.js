@@ -70,5 +70,23 @@ const memoryData = [
     "description": "",
     "details": "無詳細說明",
     "checkpoint_file": "checkpoint_20260430_145015.zip"
+  },
+  {
+    "timestamp": "2026-04-30 15:06:51",
+    "description": "指令整合與優化：回復記憶",
+    "details": "1. 將「喚醒記憶」與「檢視」整合為「回復記憶」指令。2. 重新命名腳本並修正所有硬編碼路徑為動態路徑。3. 更新 README 與功能清單。",
+    "checkpoint_file": ""
+  },
+  {
+    "timestamp": "2026-04-30 15:09:18",
+    "description": "指令更名：上次紀錄",
+    "details": "將「回復記憶」指令更名為「上次紀錄」，並同步更新 README、功能清單與腳本內容。",
+    "checkpoint_file": ""
+  },
+  {
+    "timestamp": "2026-04-30 15:21:52",
+    "description": "",
+    "details": "無詳細說明",
+    "checkpoint_file": "checkpoint_20260430_152152.zip"
   }
 ];

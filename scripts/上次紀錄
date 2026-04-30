@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# 獲取腳本所在目錄的絕對路徑，並定位到專案根目錄
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )"
+
+echo "========================================"
+echo "🧠 正在讀取上次紀錄..."
+echo "========================================"
+
+# 1. 顯示 README 中的最後一次動作摘要
+echo "📌 最後一次動作摘要："
+grep -A 1 "## 📌 最後一次動作摘要" "$PROJECT_ROOT/README.md" | tail -n 1
+echo ""
+
+# 2. 顯示 LOG.md 中最近的 3 筆記錄 (大約取最後 15 行)
+echo "📜 最近 3 筆開發紀錄："
+grep -E "^## [0-9]{4}-" "$PROJECT_ROOT/memory/LOG.md" -A 2 | tail -n 9
+echo ""
+
+echo "🖥️ 正在開啟視覺化儀表板..."
+open "$PROJECT_ROOT/memory/index.html"
+
+echo "========================================"
+echo "✅ 紀錄讀取完畢，您可以繼續開發了！"
+echo "========================================"

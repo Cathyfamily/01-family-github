@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ai Project Memory Dashboard</title>
+    <title>專案記錄簿</title>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --accent: #10b981;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #fdfdfd;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --accent: #3b82f6;
+            --border: #f1f5f9;
         }
 
         body {
@@ -30,17 +31,16 @@
         }
 
         header {
-            text-align: center;
             margin-bottom: 3rem;
-            animation: fadeInDown 0.8s ease-out;
+            text-align: center;
         }
-
+        
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -0.025em;
         }
 
         .subtitle {
@@ -56,17 +56,19 @@
 
         .memory-card {
             background-color: var(--card-bg);
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             padding: 1.5rem;
-            border: 1px solid #334155;
-            transition: transform 0.2s, border-color 0.2s;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             animation: fadeInUp 0.5s ease-out backwards;
         }
 
         .memory-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             border-color: var(--primary);
         }
 
@@ -76,8 +78,9 @@
             left: 0;
             top: 0;
             height: 100%;
-            width: 4px;
+            width: 3px;
             background-color: var(--primary);
+            opacity: 0.7;
         }
 
         .timestamp {
@@ -111,9 +114,31 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .update-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .update-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .no-data {
@@ -126,13 +151,16 @@
 <body>
     <div class="container">
         <header>
-            <h1>Ai 專案發展記憶</h1>
-            <p class="subtitle">追蹤設計流程、技術決策與成長足跡</p>
+            <h1>專案記錄簿</h1>
         </header>
 
         <div id="memory-container" class="memory-list">
             <!-- Data will be loaded here -->
-            <div class="no-data">正在喚醒記憶...</div>
+            <div class="no-data">正在載入紀錄...</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="http://127.0.0.1:5001/dev" class="update-btn">✨ 前往網頁版更新進度</a>
         </div>
 
         <div class="footer">
@@ -148,13 +176,14 @@
                 const container = document.getElementById('memory-container');
                 container.innerHTML = '';
 
-                if (!window.memoryData || window.memoryData.length === 0) {
+                const dataRaw = window.memoryData || (typeof memoryData !== 'undefined' ? memoryData : null);
+                if (!dataRaw || dataRaw.length === 0) {
                     container.innerHTML = '<div class="no-data">尚無記憶點。</div>';
                     return;
                 }
 
                 // Show latest first
-                const data = [...window.memoryData];
+                const data = [...dataRaw];
                 data.reverse().forEach((item, index) => {
                     const card = document.createElement('div');
                     card.className = 'memory-card';
@@ -162,8 +191,8 @@
                     
                     card.innerHTML = `
                         <span class="timestamp">${item.timestamp}</span>
-                        <div class="description">${item.description}</div>
-                        <div class="details">${item.details}</div>
+                        <div class="description">${item.description || '未命名變更'}</div>
+                        ${(item.details && item.details !== '無詳細說明') ? `<div class="details">${item.details}</div>` : ''}
                         ${item.checkpoint_file ? `<div style="margin-top: 1rem;"><a href="checkpoints/${item.checkpoint_file}" style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">📦 下載當時備份</a></div>` : ''}
                     `;
                     container.appendChild(card);

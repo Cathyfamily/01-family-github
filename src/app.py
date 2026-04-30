@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+
 from models import db, Stock, Milestone, Recipe
 from datetime import datetime
 import os
@@ -105,6 +106,105 @@ def delete_recipe(id):
     db.session.delete(recipe)
     db.session.commit()
     return redirect(url_for('index', tab='recipes'))
+
+import subprocess
+import shutil
+import json
+
+# --- Developer Tools (Progress Update) ---
+def run_git_command(cmd, cwd):
+    result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
+    return result.returncode == 0
+
+@app.route('/dev')
+def dev_panel():
+    return render_template('dev.html')
+
+@app.route('/dev/update', methods=['POST'])
+def dev_update():
+    category = request.form.get('category')
+    description_raw = request.form.get('description')
+    description = f"{category} {description_raw}"
+    details = request.form.get('details') or ""
+    
+    if not description:
+        flash('請輸入修改描述！')
+        return redirect(url_for('dev_panel'))
+        
+    project_root = os.path.dirname(basedir)
+    memory_dir = os.path.join(project_root, 'memory')
+    checkpoints_dir = os.path.join(memory_dir, 'checkpoints')
+    data_js_path = os.path.join(memory_dir, 'data.js')
+    log_md_path = os.path.join(memory_dir, 'LOG.md')
+    readme_path = os.path.join(project_root, 'README.md')
+    
+    now = datetime.now()
+    timestamp_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    timestamp_file = now.strftime("%Y%m%d_%H%M%S")
+    
+    try:
+        # 1. Create ZIP
+        zip_name = f"checkpoint_{timestamp_file}"
+        zip_path = os.path.join(checkpoints_dir, zip_name)
+        shutil.make_archive(zip_path, 'zip', basedir)
+        zip_file = f"{zip_name}.zip"
+        
+        # 2. Update data.js
+        if os.path.exists(data_js_path):
+            with open(data_js_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                start = content.find('[')
+                end = content.rfind(']') + 1
+                data = json.loads(content[start:end])
+        else:
+            data = []
+            
+        data.append({
+            "timestamp": timestamp_str,
+            "description": description,
+            "details": details,
+            "checkpoint_file": zip_file
+        })
+        
+        with open(data_js_path, 'w', encoding='utf-8') as f:
+            f.write(f"window.memoryData = {json.dumps(data, ensure_ascii=False, indent=2)};")
+            
+        # 3. Update LOG.md
+        with open(log_md_path, 'a', encoding='utf-8') as f:
+            f.write(f"\n## {timestamp_str}\n*   **摘要**: {description}\n*   **詳情**: {details}\n*   **備份**: {zip_file}\n")
+            
+        # 4. Update README.md
+        if os.path.exists(readme_path):
+            with open(readme_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            new_lines = []
+            skip = False
+            for line in lines:
+                if "## 📌 最後一次動作摘要" in line:
+                    new_lines.append(line)
+                    new_lines.append(f"> **{timestamp_str}**: {description}\n")
+                    skip = True
+                elif skip and line.startswith(">"): continue
+                else:
+                    skip = False
+                    new_lines.append(line)
+            with open(readme_path, 'w', encoding='utf-8') as f:
+                f.writelines(new_lines)
+                
+        # 5. Git Sync
+        git_success = False
+        if run_git_command("git add .", project_root) and \
+           run_git_command(f'git commit -m "Checkpoint: {description}"', project_root) and \
+           run_git_command("git push", project_root):
+            git_success = True
+            
+        msg = f'進度更新成功！' + (' (已同步至 GitHub)' if git_success else ' (但 Git 同步失敗)')
+        flash(msg)
+        return redirect(url_for('dev_panel'))
+        
+    except Exception as e:
+        flash(f'更新出錯：{str(e)}')
+        return redirect(url_for('dev_panel'))
 
 if __name__ == '__main__':
     app.run(debug=True)

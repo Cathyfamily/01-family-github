@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進度更新 - 開發者面板</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #fdfdfd;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .dev-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            letter-spacing: -0.025em;
+        }
+
+        p {
+            color: var(--text-dim);
+            margin: 0 0 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .flash-messages {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: #f0fdf4;
+            color: #166534;
+            font-size: 0.9rem;
+            border: 1px solid #dcfce7;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="dev-card">
+        <h1>🚀 進度更新</h1>
+        <p>提交您的開發里程碑，系統將自動備份並同步。</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for message in messages %}
+                <div>{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="/dev/update" method="POST" onsubmit="showLoading()">
+            <div class="form-group">
+                <label for="category">變更類型</label>
+                <select id="category" name="category" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--bg); color: var(--text-main);">
+                    <option value="✨ 新增功能">✨ 新增功能 (Feature)</option>
+                    <option value="🎨 UI優化">🎨 UI優化 (UI/UX)</option>
+                    <option value="🐞 錯誤修復">🐞 錯誤修復 (Bugfix)</option>
+                    <option value="🔧 系統調整">🔧 系統調整 (System)</option>
+                    <option value="📝 紀錄更新">📝 紀錄更新 (Docs)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">簡短描述</label>
+                <input type="text" id="description" name="description" placeholder="例如：整合網頁版進度更新功能" required>
+            </div>
+
+            <div class="form-group">
+                <label for="details">詳細說明 (選填)</label>
+                <textarea id="details" name="details" rows="4" placeholder="請描述具體的改動細節..."></textarea>
+            </div>
+
+            <button type="submit" class="btn">🚀 發佈至專案記錄簿</button>
+            <div id="loading">正在打包備份並同步至 GitHub，請稍候...</div>
+        </form>
+
+        <a href="/" class="back-link">← 返回 App 主頁</a>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.btn').disabled = true;
+            document.querySelector('.btn').style.opacity = '0.5';
+        }
+    </script>
+</body>
+</html>

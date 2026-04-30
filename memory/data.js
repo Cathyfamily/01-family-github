@@ -1,4 +1,4 @@
-const memoryData = [
+window.memoryData = [
   {
     "timestamp": "2026-04-29 17:00:00",
     "description": "初始化記憶系統：結構重組與自動化存檔工具建立",
@@ -18,58 +18,10 @@ const memoryData = [
     "checkpoint_file": "checkpoint_20260429_172601.zip"
   },
   {
-    "timestamp": "2026-04-29 17:27:02",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260429_172702.zip"
-  },
-  {
-    "timestamp": "2026-04-29 17:29:07",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260429_172907.zip"
-  },
-  {
     "timestamp": "2026-04-30 10:16:23",
     "description": "測試：首次編輯",
     "details": "無詳細說明",
     "checkpoint_file": "checkpoint_20260430_101623.zip"
-  },
-  {
-    "timestamp": "2026-04-30 14:32:43",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_143243.zip"
-  },
-  {
-    "timestamp": "2026-04-30 14:33:18",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_143318.zip"
-  },
-  {
-    "timestamp": "2026-04-30 14:43:52",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_144352.zip"
-  },
-  {
-    "timestamp": "2026-04-30 14:47:39",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_144739.zip"
-  },
-  {
-    "timestamp": "2026-04-30 14:50:01",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_145001.zip"
-  },
-  {
-    "timestamp": "2026-04-30 14:50:15",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_145015.zip"
   },
   {
     "timestamp": "2026-04-30 15:06:51",
@@ -84,15 +36,15 @@ const memoryData = [
     "checkpoint_file": ""
   },
   {
-    "timestamp": "2026-04-30 15:21:52",
-    "description": "",
-    "details": "無詳細說明",
-    "checkpoint_file": "checkpoint_20260430_152152.zip"
-  },
-  {
     "timestamp": "2026-04-30 15:22:47",
     "description": "讓資料夾精簡，以及修改資料夾檔名",
     "details": "無詳細說明",
     "checkpoint_file": "checkpoint_20260430_152247.zip"
+  },
+  {
+    "timestamp": "2026-04-30 16:01:43",
+    "description": "python3 src/app.py",
+    "details": "python3 src/app.py",
+    "checkpoint_file": "checkpoint_20260430_160143.zip"
   }
 ];

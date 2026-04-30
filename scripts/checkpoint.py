@@ -53,7 +53,7 @@ def update_logs(description, details, zip_file, timestamp_str):
     
     # 寫回 data.js (JS 格式)
     with open(DATA_JS, 'w', encoding='utf-8') as f:
-        f.write(f"const memoryData = {json.dumps(data, ensure_ascii=False, indent=2)};")
+        f.write(f"window.memoryData = {json.dumps(data, ensure_ascii=False, indent=2)};")
         
     # 更新 Markdown
     with open(LOG_MD, 'a', encoding='utf-8') as f:
@@ -84,9 +84,9 @@ def update_logs(description, details, zip_file, timestamp_str):
             f.writelines(new_lines)
 
 def main():
-    print("=== Ai 記憶同步系統 ===")
+    print("=== Ai 進度更新系統 ===")
     description = input("請輸入這次修改的簡短描述 (例如: 修正登入邏輯): ")
-    details = input("請輸入詳細說明 (可留空): ") or "無詳細說明"
+    details = input("請輸入詳細說明 (可留空): ") or ""
     
     now = datetime.datetime.now()
     timestamp_str = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -103,7 +103,7 @@ def main():
     if run_command("git add .") and \
        run_command(f'git commit -m "Checkpoint: {description}"') and \
        run_command("git push"):
-        print("\n✨ 記憶同步完成！您可以開啟 memory/index.html 查看。")
+        print("\n✨ 進度更新完成！您可以執行「專案記錄簿」查看。")
     else:
         print("\n❌ Git 推送失敗，請檢查網路或 Git 設定。")
 

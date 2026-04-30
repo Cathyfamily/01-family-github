@@ -18,7 +18,7 @@ grep -E "^## [0-9]{4}-" "$PROJECT_ROOT/memory/LOG.md" -A 2 | tail -n 15
 echo ""
 
 echo "🖥️ 正在開啟視覺化儀表板..."
-open "$PROJECT_ROOT/memory/index.html"
+open "$PROJECT_ROOT/memory/notes.html"
 
 echo "========================================"
 echo "✅ 紀錄讀取完畢，您可以繼續開發了！"

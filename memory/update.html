@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進度更新</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #fdfdfd;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border: #e2e8f0;
+            --success-bg: #f0fdf4;
+            --success-text: #166534;
+            --success-border: #86efac;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3rem 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header { margin-bottom: 2rem; }
+        .header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
+        .header p { color: var(--text-dim); font-size: 0.9rem; margin-top: 0.4rem; }
+
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-dim);
+        }
+
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1.5px solid var(--border);
+            border-radius: 0.6rem;
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.9rem center;
+            padding-right: 2.5rem;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea { resize: vertical; min-height: 90px; }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.75rem 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.7rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .alert {
+            border-radius: 0.7rem;
+            padding: 1rem;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+        }
+
+        .alert.error {
+            background: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fecdd3;
+        }
+
+        .loading-text {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        .nav-link {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.75rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link a {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link a:hover { color: var(--primary); }
+
+        .hint {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.35rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h1>🚀 進度更新</h1>
+        <p>填寫此次的開發里程碑，紀錄將自動同步至專案記錄簿。</p>
+    </div>
+
+    <div class="alert success" id="alert-success"></div>
+    <div class="alert error" id="alert-error"></div>
+
+    <form id="update-form">
+        <div class="form-group">
+            <label for="category">變更類型</label>
+            <select id="category" name="category">
+                <option value="✨ 新增功能">✨ 新增功能 — Feature</option>
+                <option value="🎨 UI 優化">🎨 UI 優化 — UI/UX</option>
+                <option value="🐞 錯誤修復">🐞 錯誤修復 — Bugfix</option>
+                <option value="🔧 系統調整">🔧 系統調整 — System</option>
+                <option value="📝 紀錄更新">📝 紀錄更新 — Docs</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">簡短描述</label>
+            <input type="text" id="description" placeholder="例如：整合網頁版進度更新功能" required>
+        </div>
+
+        <div class="form-group">
+            <label for="details">詳細說明 <span style="font-weight:400;text-transform:none;">(選填)</span></label>
+            <textarea id="details" placeholder="具體改動了哪些部分..."></textarea>
+        </div>
+
+        <div class="divider"></div>
+
+        <button type="submit" class="btn" id="submit-btn">🚀 發佈至專案記錄簿</button>
+        <p class="loading-text" id="loading-text">⏳ 正在寫入紀錄，請稍候...</p>
+    </form>
+
+    <div class="nav-link">
+        <a href="notes.html">← 返回專案記錄簿</a>
+    </div>
+</div>
+
+<script>
+    // 自動偵測 data.js 路徑（與此檔案同資料夾）
+    const DATA_JS_FILENAME = 'data.js';
+    let fileHandle = null;
+
+    async function getFileHandle() {
+        if (fileHandle) return fileHandle;
+        try {
+            [fileHandle] = await window.showOpenFilePicker({
+                id: 'data-js',
+                startIn: 'documents',
+                types: [{ description: 'JavaScript Data File', accept: { 'text/javascript': ['.js'] } }]
+            });
+            return fileHandle;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function readDataJs(handle) {
+        const file = await handle.getFile();
+        const text = await file.text();
+        const start = text.indexOf('[');
+        const end = text.lastIndexOf(']') + 1;
+        if (start === -1) return [];
+        try { return JSON.parse(text.slice(start, end)); } catch { return []; }
+    }
+
+    async function writeDataJs(handle, data) {
+        const writable = await handle.createWritable();
+        await writable.write(`window.memoryData = ${JSON.stringify(data, null, 2)};`);
+        await writable.close();
+    }
+
+    function showAlert(type, msg) {
+        ['success', 'error'].forEach(t => {
+            const el = document.getElementById(`alert-${t}`);
+            el.style.display = 'none';
+        });
+        const el = document.getElementById(`alert-${type}`);
+        el.textContent = msg;
+        el.style.display = 'block';
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.getElementById('update-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const category = document.getElementById('category').value;
+        const description = document.getElementById('description').value.trim();
+        const details = document.getElementById('details').value.trim();
+
+        if (!description) {
+            showAlert('error', '⚠️ 請填寫簡短描述！');
+            return;
+        }
+
+        const btn = document.getElementById('submit-btn');
+        const loading = document.getElementById('loading-text');
+        btn.disabled = true;
+        loading.style.display = 'block';
+
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+        const newEntry = {
+            timestamp,
+            description: `${category} ${description}`,
+            details: details || '',
+            checkpoint_file: ''
+        };
+
+        try {
+            // Check if File System Access API is supported
+            if (!window.showOpenFilePicker) {
+                // Fallback: generate the entry and show copy instructions
+                const entryJson = JSON.stringify(newEntry, null, 2);
+                showAlert('success', `✅ 此瀏覽器不支援自動寫入。請複製以下內容並貼入 data.js：\n${entryJson}`);
+                loading.style.display = 'none';
+                btn.disabled = false;
+                return;
+            }
+
+            showAlert('success', '📂 請選取您的 memory/data.js 檔案...');
+
+            const handle = await getFileHandle();
+            if (!handle) {
+                showAlert('error', '❌ 已取消選取。');
+                loading.style.display = 'none';
+                btn.disabled = false;
+                return;
+            }
+
+            const data = await readDataJs(handle);
+            data.push(newEntry);
+            await writeDataJs(handle, data);
+
+            showAlert('success', `✅ 進度已成功記錄！\n「${category} ${description}」已加入專案記錄簿。`);
+            document.getElementById('description').value = '';
+            document.getElementById('details').value = '';
+
+        } catch (err) {
+            showAlert('error', `❌ 寫入失敗：${err.message}`);
+        } finally {
+            loading.style.display = 'none';
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

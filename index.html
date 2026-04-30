@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --dim: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --sidebar-w: 220px;
+            --sidebar-w-tablet: 64px;
+            --bottom-nav-h: 64px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ═══════════════════════════════
+           SIDEBAR (Mac / iPad)
+        ═══════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem;
+            z-index: 100;
+            transition: width 0.2s;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+            padding-left: 0.5rem;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .logo span { color: var(--dim); font-weight: 400; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.875rem;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dim);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .nav-item:hover { background: var(--bg); color: var(--text); }
+        .nav-item.active { background: var(--primary-light); color: var(--primary); }
+        .nav-item .label { transition: opacity 0.15s; }
+
+        .nav-spacer { flex: 1; }
+
+        /* ── Bottom Navigation (mobile only, hidden on desktop) ── */
+        .bottom-nav {
+            display: none;
+        }
+
+        /* ═══════════════════════════════
+           MAIN
+        ═══════════════════════════════ */
+        main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 2.5rem;
+            min-width: 0;
+        }
+
+        .tab { display: none; animation: fadeUp 0.3s ease; }
+        .tab.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Page Header ── */
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; }
+        .page-header p { color: var(--dim); font-size: 0.9rem; margin-top: 0.25rem; }
+
+        /* ── Section Card ── */
+        .section-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+
+        /* ── Forms ── */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.75rem; }
+        .form-label { font-size: 0.78rem; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 0.04em; }
+
+        input, textarea, select {
+            padding: 0.75rem 0.875rem;
+            border: 1.5px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem; /* 防止 iOS 自動縮放 */
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
+        }
+        textarea { resize: vertical; }
+        select { width: auto; cursor: pointer; }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.625rem;
+            border: none;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid #fecdd3;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.82rem;
+        }
+        .btn-danger:hover { background: #fff1f2; }
+
+        /* ── Table ── */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 520px; }
+        .data-table th {
+            text-align: left;
+            padding: 0.6rem 1rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--dim);
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--bg); }
+        .stock-symbol { font-weight: 700; color: var(--primary); font-family: monospace; font-size: 1rem; }
+
+        /* ── Grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .grid-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 0.875rem;
+            overflow: hidden;
+            transition: all 0.25s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .grid-card:active { transform: scale(0.98); }
+
+        .card-img {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--dim);
+        }
+        .card-body { padding: 1.25rem; }
+        .card-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .card-body p { color: var(--dim); font-size: 0.875rem; line-height: 1.6; }
+        .card-body .pre { white-space: pre-line; }
+
+        .date-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-actions { margin-top: 1rem; display: flex; justify-content: flex-end; }
+
+        /* ── Sort bar ── */
+        .sort-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--dim); }
+
+        /* ── Empty State ── */
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--dim);
+            font-size: 0.95rem;
+        }
+        .empty .emoji { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+        /* ── Toast ── */
+        #toast {
+            position: fixed;
+            bottom: 5rem;
+            right: 1.5rem;
+            background: #0f172a;
+            color: #fff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.625rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 9999;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ═══════════════════════════════
+           TABLET (iPad) — icon sidebar
+           640px – 1023px
+        ═══════════════════════════════ */
+        @media (max-width: 1023px) and (min-width: 641px) {
+            .sidebar {
+                width: var(--sidebar-w-tablet);
+                padding: 1.5rem 0.5rem;
+                align-items: center;
+            }
+            .logo { font-size: 1.4rem; padding: 0; margin-bottom: 1.5rem; }
+            .logo span { display: none; }
+            .nav-item { justify-content: center; padding: 0.75rem; gap: 0; border-radius: 0.75rem; }
+            .nav-item .label { display: none; }
+            .nav-item { font-size: 1.4rem; }
+            main { margin-left: var(--sidebar-w-tablet); padding: 1.75rem 1.25rem; }
+        }
+
+        /* ═══════════════════════════════
+           MOBILE (iPhone) — bottom nav
+           ≤ 640px
+        ═══════════════════════════════ */
+        @media (max-width: 640px) {
+            body { flex-direction: column; }
+
+            .sidebar { display: none; }
+
+            main {
+                margin-left: 0;
+                padding: 1.25rem 1rem;
+                padding-bottom: calc(var(--bottom-nav-h) + 1rem);
+            }
+
+            .page-header h1 { font-size: 1.4rem; }
+
+            .form-row { grid-template-columns: 1fr 1fr; }
+
+            .grid { grid-template-columns: 1fr; }
+
+            /* Bottom Navigation Bar */
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: var(--bottom-nav-h);
+                background: var(--card);
+                border-top: 1px solid var(--border);
+                z-index: 100;
+                align-items: stretch;
+                padding: 0 0.5rem;
+                padding-bottom: env(safe-area-inset-bottom);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+
+            .bottom-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.2rem;
+                border: none;
+                background: none;
+                color: var(--dim);
+                font-size: 0.65rem;
+                font-weight: 600;
+                font-family: inherit;
+                cursor: pointer;
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+                -webkit-tap-highlight-color: transparent;
+                transition: color 0.2s;
+            }
+            .bottom-nav-item .icon { font-size: 1.4rem; line-height: 1; }
+            .bottom-nav-item.active { color: var(--primary); }
+
+            #toast { bottom: calc(var(--bottom-nav-h) + 0.75rem); right: 1rem; left: 1rem; text-align: center; }
+        }
+        .card-img {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--dim);
+        }
+        .card-body { padding: 1.25rem; }
+        .card-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .card-body p { color: var(--dim); font-size: 0.875rem; line-height: 1.6; }
+        .card-body .pre { white-space: pre-line; }
+
+        .date-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-actions { margin-top: 1rem; display: flex; justify-content: flex-end; }
+
+        /* ── Sort bar ── */
+        .sort-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--dim); }
+
+        /* ── Empty State ── */
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--dim);
+            font-size: 0.95rem;
+        }
+        .empty .emoji { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+        /* ── Toast ── */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0f172a;
+            color: #fff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.625rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+    <div class="logo">Family <span>Hub</span></div>
+
+    <button class="nav-item active" id="nav-stocks" onclick="switchTab('stocks')">
+        📈 <span class="label">股票管理</span>
+    </button>
+    <button class="nav-item" id="nav-milestones" onclick="switchTab('milestones')">
+        🧒 <span class="label">成長紀錄</span>
+    </button>
+    <button class="nav-item" id="nav-recipes" onclick="switchTab('recipes')">
+        🍳 <span class="label">美味食譜</span>
+    </button>
+
+    <div class="nav-spacer"></div>
+
+    <button class="nav-item" onclick="window.open('memory/notes.html')">
+        📔 <span class="label">專案記錄簿</span>
+    </button>
+</nav>
+
+<!-- ── Bottom Nav (iPhone) ── -->
+<nav class="bottom-nav">
+    <button class="bottom-nav-item active" id="bnav-stocks" onclick="switchTab('stocks')">
+        <span class="icon">📈</span>股票
+    </button>
+    <button class="bottom-nav-item" id="bnav-milestones" onclick="switchTab('milestones')">
+        <span class="icon">🧒</span>成長
+    </button>
+    <button class="bottom-nav-item" id="bnav-recipes" onclick="switchTab('recipes')">
+        <span class="icon">🍳</span>食譜
+    </button>
+    <button class="bottom-nav-item" onclick="window.open('memory/notes.html')">
+        <span class="icon">📔</span>記錄簿
+    </button>
+</nav>
+
+<!-- ── Main Content ── -->
+<main>
+
+    <!-- 股票管理 -->
+    <div id="tab-stocks" class="tab active">
+        <div class="page-header">
+            <h1>📈 股票管理</h1>
+            <p>記錄您的持股狀況</p>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">新增持股</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">股票代號</label>
+                    <input id="s-symbol" placeholder="例：2330">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">股票名稱</label>
+                    <input id="s-name" placeholder="例：台積電">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">股數</label>
+                    <input id="s-shares" type="number" placeholder="例：100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">買入價格</label>
+                    <input id="s-price" type="number" placeholder="例：580">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="addStock()">＋ 新增持股</button>
+        </div>
+
+        <div class="section-card">
+            <div class="sort-bar">
+                排序：
+                <select onchange="renderStocks(this.value)">
+                    <option value="time-desc">新增時間（新到舊）</option>
+                    <option value="time-asc">新增時間（舊到新）</option>
+                </select>
+            </div>
+            <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>代號</th><th>名稱</th><th>股數</th><th>買入價格</th><th>新增日期</th><th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="stocks-table"></tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成長紀錄 -->
+    <div id="tab-milestones" class="tab">
+        <div class="page-header">
+            <h1>🧒 成長紀錄</h1>
+            <p>記錄孩子每個珍貴的里程碑</p>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">新增里程碑</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">標題</label>
+                    <input id="m-title" placeholder="例：第一次走路">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input id="m-date" type="date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">選擇照片</label>
+                <input id="m-img" type="file" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea id="m-desc" rows="3" placeholder="記錄這個特別時刻..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="addMilestone()">＋ 新增里程碑</button>
+        </div>
+
+        <div class="sort-bar">
+            排序：
+            <select onchange="renderMilestones(this.value)">
+                <option value="date-desc">日期（新到舊）</option>
+                <option value="date-asc">日期（舊到新）</option>
+            </select>
+        </div>
+        <div id="milestones-grid" class="grid"></div>
+    </div>
+
+    <!-- 食譜管理 -->
+    <div id="tab-recipes" class="tab">
+        <div class="page-header">
+            <h1>🍳 美味食譜</h1>
+            <p>收藏家中的私房料理</p>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">新增食譜</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">食譜名稱</label>
+                    <input id="r-name" placeholder="例：媽媽的紅燒肉">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">食材分類</label>
+                    <input id="r-type" list="type-list" placeholder="例：豬肉">
+                    <datalist id="type-list">
+                        <option value="豬肉">
+                        <option value="牛肉">
+                        <option value="羊肉">
+                        <option value="雞肉">
+                        <option value="海鮮">
+                        <option value="蔬菜">
+                        <option value="甜點">
+                        <option value="其他">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">選擇照片</label>
+                    <input id="r-img" type="file" accept="image/*">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">使用器具</label>
+                    <input id="r-utensils" list="utensils-list" placeholder="例：氣炸鍋">
+                    <datalist id="utensils-list">
+                        <option value="氣炸鍋">
+                        <option value="烤箱">
+                        <option value="電鍋">
+                        <option value="平底鍋">
+                        <option value="壓力鍋">
+                        <option value="微波爐">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹調溫度</label>
+                    <input id="r-temp" list="temp-list" placeholder="例：180°C">
+                    <datalist id="temp-list">
+                        <option value="160°C">
+                        <option value="180°C">
+                        <option value="200°C">
+                        <option value="大火">
+                        <option value="中火">
+                        <option value="小火">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹調時間</label>
+                    <input id="r-time" placeholder="例：15 分鐘">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">食材內容</label>
+                <textarea id="r-ingredients" rows="3" placeholder="豬五花 600g&#10;醬油 3匙..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">料理步驟</label>
+                <textarea id="r-instructions" rows="4" placeholder="1. 豬肉切塊&#10;2. 熱鍋下油..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="addRecipe()">＋ 新增食譜</button>
+        </div>
+
+        <div class="sort-bar">
+            排序：
+            <select onchange="renderRecipes(this.value)">
+                <option value="time-desc">建立時間（新到舊）</option>
+                <option value="time-asc">建立時間（舊到新）</option>
+                <option value="name-asc">名稱（A→Z）</option>
+                <option value="type-asc">食材類型</option>
+            </select>
+        </div>
+        <div id="recipes-grid" class="grid"></div>
+    </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+    // ── Storage helpers ──
+    const load = key => JSON.parse(localStorage.getItem(key) || '[]');
+    const save = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+    const now = () => new Date().toISOString();
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ── Tab switching ──
+    // ── File to Base64 helper ──
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) { resolve(''); return; }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        // sidebar (only exists on tablet/desktop)
+        const sideNav = document.getElementById('nav-' + name);
+        if (sideNav) sideNav.classList.add('active');
+        // bottom nav (only exists on mobile)
+        const botNav = document.getElementById('bnav-' + name);
+        if (botNav) botNav.classList.add('active');
+        localStorage.setItem('activeTab', name);
+    }
+
+    // ══════════════════════════════════
+    // STOCKS
+    // ══════════════════════════════════
+    function addStock() {
+        const symbol = document.getElementById('s-symbol').value.trim();
+        const name   = document.getElementById('s-name').value.trim();
+        const shares = parseFloat(document.getElementById('s-shares').value);
+        const price  = parseFloat(document.getElementById('s-price').value);
+        if (!symbol || !name || isNaN(shares) || isNaN(price)) { toast('⚠️ 請填寫所有欄位'); return; }
+
+        const stocks = load('stocks');
+        stocks.push({ id: uid(), symbol, name, shares, price, createdAt: now() });
+        save('stocks', stocks);
+        ['s-symbol','s-name','s-shares','s-price'].forEach(id => document.getElementById(id).value = '');
+        renderStocks();
+        toast('✅ 持股已新增');
+    }
+
+    function deleteStock(id) {
+        save('stocks', load('stocks').filter(s => s.id !== id));
+        renderStocks();
+        toast('🗑️ 已刪除');
+    }
+
+    function renderStocks(sort = 'time-desc') {
+        let stocks = load('stocks');
+        stocks.sort((a, b) => sort === 'time-asc'
+            ? new Date(a.createdAt) - new Date(b.createdAt)
+            : new Date(b.createdAt) - new Date(a.createdAt));
+
+        const tbody = document.getElementById('stocks-table');
+        if (!stocks.length) {
+            tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><span class="emoji">📊</span>尚無持股紀錄，請新增您的第一筆！</div></td></tr>';
+            return;
+        }
+        tbody.innerHTML = stocks.map(s => `
+            <tr>
+                <td><span class="stock-symbol">${s.symbol}</span></td>
+                <td>${s.name}</td>
+                <td>${s.shares}</td>
+                <td>$${s.price}</td>
+                <td>${s.createdAt.slice(0,10)}</td>
+                <td><button class="btn btn-danger" onclick="deleteStock('${s.id}')">刪除</button></td>
+            </tr>
+        `).join('');
+    }
+
+    // ══════════════════════════════════
+    // MILESTONES
+    // ══════════════════════════════════
+    async function addMilestone() {
+        const title = document.getElementById('m-title').value.trim();
+        const date  = document.getElementById('m-date').value;
+        const imgFile = document.getElementById('m-img').files[0];
+        const desc  = document.getElementById('m-desc').value.trim();
+        if (!title || !date) { toast('⚠️ 請填寫標題與日期'); return; }
+
+        const img = await fileToBase64(imgFile);
+        const milestones = load('milestones');
+        milestones.push({ id: uid(), title, date, img, desc, createdAt: now() });
+        save('milestones', milestones);
+        ['m-title','m-date','m-img','m-desc'].forEach(id => document.getElementById(id).value = '');
+        renderMilestones();
+        toast('✅ 里程碑已記錄');
+    }
+
+    function deleteMilestone(id) {
+        save('milestones', load('milestones').filter(m => m.id !== id));
+        renderMilestones();
+        toast('🗑️ 已刪除');
+    }
+
+    function renderMilestones(sort = 'date-desc') {
+        let items = load('milestones');
+        items.sort((a, b) => sort === 'date-asc'
+            ? new Date(a.date) - new Date(b.date)
+            : new Date(b.date) - new Date(a.date));
+
+        const grid = document.getElementById('milestones-grid');
+        if (!items.length) {
+            grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="emoji">🧒</span>尚無成長紀錄，記錄第一個里程碑吧！</div>';
+            return;
+        }
+        grid.innerHTML = items.map(m => `
+            <div class="grid-card">
+                <div class="card-img" ${m.img ? `style="background-image:url('${m.img}')"` : ''}>
+                    ${m.img ? '' : '📷'}
+                </div>
+                <div class="card-body">
+                    <span class="date-badge">${m.date}</span>
+                    <h3>${m.title}</h3>
+                    <p>${m.desc || ''}</p>
+                    <div class="card-actions">
+                        <button class="btn btn-danger" onclick="deleteMilestone('${m.id}')">刪除</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ══════════════════════════════════
+    // RECIPES
+    // ══════════════════════════════════
+    async function addRecipe() {
+        const name  = document.getElementById('r-name').value.trim();
+        const type  = document.getElementById('r-type').value.trim();
+        const imgFile = document.getElementById('r-img').files[0];
+        const utensils = document.getElementById('r-utensils').value.trim();
+        const temp  = document.getElementById('r-temp').value.trim();
+        const time  = document.getElementById('r-time').value.trim();
+        const ingr  = document.getElementById('r-ingredients').value.trim();
+        const instr = document.getElementById('r-instructions').value.trim();
+        
+        if (!name || !ingr || !instr) { toast('⚠️ 請填寫名稱、食材與步驟'); return; }
+
+        const img = await fileToBase64(imgFile);
+        const recipes = load('recipes');
+        recipes.push({ 
+            id: uid(), name, type, img, utensils, temp, time, ingr, instr, createdAt: now() 
+        });
+        save('recipes', recipes);
+        
+        // Reset fields
+        ['r-name','r-type','r-img','r-utensils','r-temp','r-time','r-ingredients','r-instructions'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el.type === 'file') el.value = '';
+            else el.value = '';
+        });
+        
+        renderRecipes();
+        toast('✅ 食譜已新增');
+    }
+
+    function deleteRecipe(id) {
+        save('recipes', load('recipes').filter(r => r.id !== id));
+        renderRecipes();
+        toast('🗑️ 已刪除');
+    }
+
+    function renderRecipes(sort = 'time-desc') {
+        let items = load('recipes');
+        if (sort === 'name-asc') items.sort((a,b) => (a.name || '').localeCompare(b.name || '', 'zh-TW'));
+        else if (sort === 'type-asc') items.sort((a,b) => (a.type || '').localeCompare(b.type || '', 'zh-TW'));
+        else items.sort((a,b) => sort === 'time-asc'
+            ? new Date(a.createdAt) - new Date(b.createdAt)
+            : new Date(b.createdAt) - new Date(a.createdAt));
+
+        const grid = document.getElementById('recipes-grid');
+        if (!items.length) {
+            grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="emoji">🍳</span>尚無食譜，新增您的第一道料理吧！</div>';
+            return;
+        }
+        grid.innerHTML = items.map(r => `
+            <div class="grid-card">
+                <div class="card-img" ${r.img ? `style="background-image:url('${r.img}')"` : ''}>
+                    ${r.img ? '' : '🍲'}
+                </div>
+                <div class="card-body">
+                    <h3>${r.name}</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem;">
+                        ${r.type ? `<span class="date-badge" style="background:#f3f4f6; color:#374151;">📂 ${r.type}</span>` : ''}
+                        ${r.utensils ? `<span class="date-badge" style="background:#fff7ed; color:#9a3412;">🛠️ ${r.utensils}</span>` : ''}
+                        ${r.temp ? `<span class="date-badge" style="background:#fef2f2; color:#991b1b;">🔥 ${r.temp}</span>` : ''}
+                        ${r.time ? `<span class="date-badge" style="background:#f0f9ff; color:#075985;">⏱️ ${r.time}</span>` : ''}
+                    </div>
+                    <p style="font-size:0.78rem; font-weight:700; color:var(--dim); margin:0.5rem 0 0.2rem;">食材內容</p>
+                    <p class="pre">${r.ingr}</p>
+                    <p style="font-size:0.78rem; font-weight:700; color:var(--dim); margin:0.75rem 0 0.2rem;">料理步驟</p>
+                    <p class="pre">${r.instr}</p>
+                    <div class="card-actions">
+                        <button class="btn btn-danger" onclick="deleteRecipe('${r.id}')">刪除</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ── Init ──
+    window.addEventListener('DOMContentLoaded', () => {
+        const tab = localStorage.getItem('activeTab') || 'stocks';
+        switchTab(tab);
+        renderStocks();
+        renderMilestones();
+        renderRecipes();
+    });
+</script>
+</body>
+</html>

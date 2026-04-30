@@ -1,15 +1,252 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="stocks" class="tab-content active">
-    {% include 'stocks.html' %}
+
+<!-- ── 股票管理 ── -->
+<div id="stocks" class="tab-content">
+    <div class="page-header">
+        <div>
+            <h1>📈 股票管理</h1>
+            <p>記錄您的持股狀況</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">新增持股</div>
+        <form action="{{ url_for('add_stock') }}" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">股票代號</label>
+                    <input type="text" name="symbol" placeholder="例：2330" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">股票名稱</label>
+                    <input type="text" name="name" placeholder="例：台積電" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">股數</label>
+                    <input type="number" step="0.01" name="shares" placeholder="例：100" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">買入價格</label>
+                    <input type="number" step="0.01" name="purchase_price" placeholder="例：580" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">＋ 新增持股</button>
+        </form>
+    </div>
+
+    <div class="section-card">
+        <div class="sort-bar">
+            <span>排序：</span>
+            <select id="sort-stocks" onchange="sortStocks(this.value)">
+                <option value="time-desc">新增時間 (新到舊)</option>
+                <option value="time-asc">新增時間 (舊到新)</option>
+            </select>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>代號</th>
+                    <th>名稱</th>
+                    <th>股數</th>
+                    <th>買入價格</th>
+                    <th>新增日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="stocks-tbody">
+                {% for stock in stocks %}
+                <tr class="stock-item" data-time="{{ stock.date_added.isoformat() }}">
+                    <td><span class="stock-symbol">{{ stock.symbol }}</span></td>
+                    <td>{{ stock.name }}</td>
+                    <td>{{ stock.shares }}</td>
+                    <td>${{ stock.purchase_price }}</td>
+                    <td>{{ stock.date_added.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_stock', id=stock.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="empty-state">尚無持股紀錄，請新增您的第一筆！</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
+<!-- ── 成長紀錄 ── -->
 <div id="milestones" class="tab-content">
-    {% include 'milestones.html' %}
+    <div class="page-header">
+        <div>
+            <h1>👶 成長紀錄</h1>
+            <p>記錄孩子每個珍貴的里程碑</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">新增里程碑</div>
+        <form action="{{ url_for('add_milestone') }}" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">標題</label>
+                    <input type="text" name="title" placeholder="例：第一次走路" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input type="date" name="date" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">圖片網址 (選填)</label>
+                <input type="url" name="image_url" placeholder="https://...">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">描述</label>
+                <textarea name="description" placeholder="記錄這個特別時刻..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">＋ 新增里程碑</button>
+        </form>
+    </div>
+
+    <div class="sort-bar">
+        <span>排序：</span>
+        <select id="sort-milestones" onchange="sortMilestones(this.value)">
+            <option value="date-desc">日期 (新到舊)</option>
+            <option value="date-asc">日期 (舊到新)</option>
+        </select>
+    </div>
+
+    <div class="grid-container" id="milestones-grid">
+        {% for milestone in milestones %}
+        <div class="grid-item milestone-item" data-date="{{ milestone.date.isoformat() }}">
+            {% if milestone.image_url %}
+            <div class="card-img" style="background-image: url('{{ milestone.image_url }}')"></div>
+            {% else %}
+            <div class="card-img placeholder">📷</div>
+            {% endif %}
+            <div class="card-body">
+                <span class="date-badge">{{ milestone.date.strftime('%Y-%m-%d') }}</span>
+                <h3>{{ milestone.title }}</h3>
+                <p>{{ milestone.description }}</p>
+                <div class="card-actions">
+                    <form action="{{ url_for('delete_milestone', id=milestone.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">刪除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-state">尚無成長紀錄，記錄第一個里程碑吧！</p>
+        {% endfor %}
+    </div>
 </div>
 
+<!-- ── 食譜管理 ── -->
 <div id="recipes" class="tab-content">
-    {% include 'recipes.html' %}
+    <div class="page-header">
+        <div>
+            <h1>🍳 美味食譜</h1>
+            <p>收藏家中的私房料理</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">新增食譜</div>
+        <form action="{{ url_for('add_recipe') }}" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">食譜名稱</label>
+                    <input type="text" name="name" placeholder="例：媽媽的紅燒肉" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">圖片網址 (選填)</label>
+                    <input type="url" name="image_url" placeholder="https://...">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">食材清單</label>
+                <textarea name="ingredients" placeholder="豬五花 600g&#10;醬油 3匙&#10;..." required></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">料理步驟</label>
+                <textarea name="instructions" placeholder="1. 豬肉切塊&#10;2. 熱鍋下油..." rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">＋ 新增食譜</button>
+        </form>
+    </div>
+
+    <div class="sort-bar">
+        <span>排序：</span>
+        <select id="sort-recipes" onchange="sortRecipes(this.value)">
+            <option value="time-desc">建立時間 (新到舊)</option>
+            <option value="time-asc">建立時間 (舊到新)</option>
+            <option value="name-asc">名稱 (A→Z)</option>
+        </select>
+    </div>
+
+    <div class="grid-container" id="recipes-grid">
+        {% for recipe in recipes %}
+        <div class="grid-item recipe-item" data-time="{{ recipe.created_at.isoformat() }}" data-name="{{ recipe.name }}">
+            {% if recipe.image_url %}
+            <div class="card-img" style="background-image: url('{{ recipe.image_url }}')"></div>
+            {% else %}
+            <div class="card-img placeholder">🍲</div>
+            {% endif %}
+            <div class="card-body">
+                <h3>{{ recipe.name }}</h3>
+                <p style="font-size:0.8rem; font-weight:600; color: var(--text-dim); margin: 0.5rem 0 0.25rem;">食材</p>
+                <p class="pre-line">{{ recipe.ingredients }}</p>
+                <p style="font-size:0.8rem; font-weight:600; color: var(--text-dim); margin: 0.75rem 0 0.25rem;">步驟</p>
+                <p class="pre-line">{{ recipe.instructions }}</p>
+                <div class="card-actions">
+                    <form action="{{ url_for('delete_recipe', id=recipe.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">刪除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-state">尚無食譜，新增您的第一道料理吧！</p>
+        {% endfor %}
+    </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function sortStocks(mode) {
+    const tbody = document.getElementById('stocks-tbody');
+    const rows = Array.from(tbody.querySelectorAll('.stock-item'));
+    rows.sort((a, b) => {
+        const at = new Date(a.dataset.time), bt = new Date(b.dataset.time);
+        return mode === 'time-asc' ? at - bt : bt - at;
+    });
+    rows.forEach(r => tbody.appendChild(r));
+}
+
+function sortMilestones(mode) {
+    const grid = document.getElementById('milestones-grid');
+    const items = Array.from(grid.querySelectorAll('.milestone-item'));
+    items.sort((a, b) => {
+        const ad = new Date(a.dataset.date), bd = new Date(b.dataset.date);
+        return mode === 'date-asc' ? ad - bd : bd - ad;
+    });
+    items.forEach(i => grid.appendChild(i));
+}
+
+function sortRecipes(mode) {
+    const grid = document.getElementById('recipes-grid');
+    const items = Array.from(grid.querySelectorAll('.recipe-item'));
+    items.sort((a, b) => {
+        if (mode === 'name-asc') return a.dataset.name.localeCompare(b.dataset.name, 'zh-TW');
+        const at = new Date(a.dataset.time), bt = new Date(b.dataset.time);
+        return mode === 'time-asc' ? at - bt : bt - at;
+    });
+    items.forEach(i => grid.appendChild(i));
+}
+</script>
 {% endblock %}

@@ -3,41 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Ai Dashboard</title>
+    <title>Family 管理中心</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <div class="logo">FAMILY Ai</div>
-        <div class="nav-links">
-            <button class="nav-btn active" onclick="showTab('stocks')">股票管理</button>
-            <button class="nav-btn" onclick="showTab('milestones')">成長紀錄</button>
-            <button class="nav-btn" onclick="showTab('recipes')">美味食譜</button>
-        </div>
-        <div class="user-info" style="color: var(--text-dim); font-size: 0.9rem;">
-            {% if current_user.is_authenticated %}
-                <span>{{ current_user.username }}</span> | <a href="{{ url_for('logout') }}" style="color: var(--primary); text-decoration: none;">登出</a>
-            {% else %}
-                <a href="{{ url_for('login') }}" style="color: var(--primary); text-decoration: none;">登入</a>
-            {% endif %}
-        </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo">Family <span>Hub</span></div>
+
+        <button class="nav-item active" id="nav-stocks" onclick="switchTab('stocks')">
+            <span class="icon">📈</span>
+            <span>股票管理</span>
+        </button>
+        <button class="nav-item" id="nav-milestones" onclick="switchTab('milestones')">
+            <span class="icon">👶</span>
+            <span>成長紀錄</span>
+        </button>
+        <button class="nav-item" id="nav-recipes" onclick="switchTab('recipes')">
+            <span class="icon">🍳</span>
+            <span>美味食譜</span>
+        </button>
+
+        <div class="nav-spacer"></div>
+
+        <a href="{{ url_for('logout') }}" style="text-decoration:none;">
+            <div class="nav-item logout-btn">
+                <span class="icon">🚪</span>
+                <span>登出</span>
+            </div>
+        </a>
     </nav>
 
+    <!-- Main Content -->
     <main>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flash-list">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </main>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-        function showTab(tabId) {
-            // 切換頁籤邏輯
+        function switchTab(tabId) {
+            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            
+            // Deactivate all nav items
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            // Show selected tab
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            // Activate selected nav item
+            document.getElementById('nav-' + tabId).classList.add('active');
+            // Save to localStorage
+            localStorage.setItem('activeTab', tabId);
         }
+
+        // Restore last active tab or use URL param
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab') || localStorage.getItem('activeTab') || 'stocks';
+            switchTab(tab);
+        });
     </script>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>

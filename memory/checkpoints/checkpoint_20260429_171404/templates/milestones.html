@@ -1,0 +1,46 @@
+<div class="card fade-in">
+    <h2>👶 成長里程紀錄 (Child Milestones)</h2>
+    <form action="{{ url_for('add_milestone') }}" method="POST" class="add-form">
+        <div class="form-group row">
+            <input type="text" name="title" placeholder="標題 (Title)" required>
+            <input type="date" name="date" required>
+        </div>
+        <div class="form-group">
+            <input type="url" name="image_url" placeholder="圖片網址 (Image URL) - 選填">
+        </div>
+        <div class="form-group">
+            <textarea name="description" placeholder="描述內容 (Description)" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">新增里程碑</button>
+    </form>
+
+    <div class="sort-control mt-4 text-right">
+        <label for="sort-milestones">排序方式: </label>
+        <select id="sort-milestones" class="sort-select" style="padding: 0.3rem; border-radius: 4px;">
+            <option value="date-desc">日期 (新到舊)</option>
+            <option value="date-asc">日期 (舊到新)</option>
+        </select>
+    </div>
+
+    <div class="grid-container mt-2" id="milestones-grid">
+        {% for milestone in milestones %}
+        <div class="grid-item milestone-item" data-date="{{ milestone.date.isoformat() }}">
+            {% if milestone.image_url %}
+            <div class="card-img" style="background-image: url('{{ milestone.image_url }}')"></div>
+            {% else %}
+            <div class="card-img placeholder">📷 無圖片</div>
+            {% endif %}
+            <div class="card-body">
+                <h3>{{ milestone.title }}</h3>
+                <span class="date-badge">{{ milestone.date.strftime('%Y-%m-%d') }}</span>
+                <p>{{ milestone.description }}</p>
+                <form action="{{ url_for('delete_milestone', id=milestone.id) }}" method="POST" class="mt-2 text-right">
+                    <button type="submit" class="btn btn-danger btn-sm">刪除</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center col-span-full">尚無成長紀錄</p>
+        {% endfor %}
+    </div>
+</div>

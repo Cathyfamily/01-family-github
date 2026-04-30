@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Ai UI Preview</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* 額外針對靜態預覽的修正 */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">FAMILY Ai (預覽版)</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="showTab('stocks')">股票管理</button>
+            <button class="nav-btn" onclick="showTab('milestones')">成長紀錄</button>
+            <button class="nav-btn" onclick="showTab('recipes')">美味食譜</button>
+        </div>
+        <div class="user-info" style="color: var(--text-dim); font-size: 0.9rem;">
+            預覽模式
+        </div>
+    </nav>
+
+    <main>
+        <div id="stocks" class="tab-content active">
+            <h2>股票管理系統</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-label">總市值</div>
+                    <div class="stat-value">$1,250,000</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">今日損益</div>
+                    <div class="stat-value" style="color: #ef4444;">-$2,500</div>
+                </div>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>台積電 (2330)</h3>
+                    <p>持股: 1000 股</p>
+                    <p>成本: 600.0</p>
+                    <p style="color: var(--accent); font-weight: bold;">現價: 750.0 (+25%)</p>
+                </div>
+                <div class="card">
+                    <h3>鴻海 (2317)</h3>
+                    <p>持股: 2000 股</p>
+                    <p>成本: 105.0</p>
+                    <p style="color: var(--accent); font-weight: bold;">現價: 150.0 (+42%)</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="milestones" class="tab-content">
+            <h2>孩子成長紀錄</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>第一步路</h3>
+                    <p>日期: 2026-01-15</p>
+                    <p>今天寶寶終於跨出了人生第一步！全家人都非常驚喜。</p>
+                </div>
+                <div class="card">
+                    <h3>第一次叫爸爸</h3>
+                    <p>日期: 2026-03-20</p>
+                    <p>雖然聽起來像「叭叭」，但我們認定這就是第一次叫人！</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="recipes" class="tab-content">
+            <h2>美味家常食譜</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>紅燒肉</h3>
+                    <p>分類: 晚餐</p>
+                    <p>秘訣: 冰糖炒糖色，慢火燉煮一小時。</p>
+                </div>
+                <div class="card">
+                    <h3>義大利麵</h3>
+                    <p>分類: 午餐</p>
+                    <p>秘訣: 蒜末爆香，加入大量起司。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>

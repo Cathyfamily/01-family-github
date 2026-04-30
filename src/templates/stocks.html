@@ -1,0 +1,55 @@
+<div class="card fade-in">
+    <h2>📈 股票管理系統 (Stock Management)</h2>
+    <form action="{{ url_for('add_stock') }}" method="POST" class="add-form">
+        <div class="form-group row">
+            <input type="text" name="symbol" placeholder="股票代號 (Symbol)" required>
+            <input type="text" name="name" placeholder="股票名稱 (Name)" required>
+        </div>
+        <div class="form-group row">
+            <input type="number" step="0.01" name="shares" placeholder="股數 (Shares)" required>
+            <input type="number" step="0.01" name="purchase_price" placeholder="買入價格 (Purchase Price)" required>
+        </div>
+        <button type="submit" class="btn btn-primary">新增股票紀錄</button>
+    </form>
+
+    <div class="sort-control mt-4 text-right">
+        <label for="sort-stocks">排序方式: </label>
+        <select id="sort-stocks" class="sort-select" style="padding: 0.3rem; border-radius: 4px;">
+            <option value="time-desc">新增日期 (新到舊)</option>
+            <option value="time-asc">新增日期 (舊到新)</option>
+        </select>
+    </div>
+
+    <div class="table-responsive mt-2">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>代號</th>
+                    <th>名稱</th>
+                    <th>股數</th>
+                    <th>買入價格</th>
+                    <th>新增日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="stocks-tbody">
+                {% for stock in stocks %}
+                <tr class="stock-item" data-time="{{ stock.date_added.isoformat() }}">
+                    <td>{{ stock.symbol }}</td>
+                    <td>{{ stock.name }}</td>
+                    <td>{{ stock.shares }}</td>
+                    <td>${{ stock.purchase_price }}</td>
+                    <td>{{ stock.date_added.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_stock', id=stock.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center">尚無股票紀錄</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

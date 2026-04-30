@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ai Project Memory Dashboard</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .memory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .memory-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #334155;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .memory-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--primary);
+        }
+
+        .timestamp {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .description {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .details {
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ai 專案發展記憶</h1>
+            <p class="subtitle">追蹤設計流程、技術決策與成長足跡</p>
+        </header>
+
+        <div id="memory-container" class="memory-list">
+            <!-- Data will be loaded here -->
+            <div class="no-data">正在喚醒記憶...</div>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Ai Memory System - Designed for Continuous Learning
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        function loadMemories() {
+            try {
+                // memoryData is loaded from data.js
+                const container = document.getElementById('memory-container');
+                container.innerHTML = '';
+
+                if (!window.memoryData || window.memoryData.length === 0) {
+                    container.innerHTML = '<div class="no-data">尚無記憶點。</div>';
+                    return;
+                }
+
+                // Show latest first
+                const data = [...window.memoryData];
+                data.reverse().forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'memory-card';
+                    card.style.animationDelay = `${index * 0.1}s`;
+                    
+                    card.innerHTML = `
+                        <span class="timestamp">${item.timestamp}</span>
+                        <div class="description">${item.description}</div>
+                        <div class="details">${item.details}</div>
+                        ${item.checkpoint_file ? `<div style="margin-top: 1rem;"><a href="checkpoints/${item.checkpoint_file}" style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">📦 下載當時備份</a></div>` : ''}
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                document.getElementById('memory-container').innerHTML = '<div class="no-data">無法載入資料，請確保 data.js 存在且格式正確。</div>';
+            }
+        }
+
+        window.onload = loadMemories;
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="stocks" class="tab-content active">
+    {% include 'stocks.html' %}
+</div>
+
+<div id="milestones" class="tab-content">
+    {% include 'milestones.html' %}
+</div>
+
+<div id="recipes" class="tab-content">
+    {% include 'recipes.html' %}
+</div>
+{% endblock %}

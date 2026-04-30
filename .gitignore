@@ -1,0 +1,12 @@
+# 環境與快取
+venv/
+__pycache__/
+*.pyc
+
+# 資料庫與敏感檔案
+*.db
+*.sqlite3
+.DS_Store
+
+# 備份與暫存
+memory/checkpoints/*.zip

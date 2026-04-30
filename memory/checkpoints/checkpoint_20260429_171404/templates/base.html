@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Ai Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="logo">FAMILY Ai</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="showTab('stocks')">股票管理</button>
+            <button class="nav-btn" onclick="showTab('milestones')">成長紀錄</button>
+            <button class="nav-btn" onclick="showTab('recipes')">美味食譜</button>
+        </div>
+        <div class="user-info" style="color: var(--text-dim); font-size: 0.9rem;">
+            {% if current_user.is_authenticated %}
+                <span>{{ current_user.username }}</span> | <a href="{{ url_for('logout') }}" style="color: var(--primary); text-decoration: none;">登出</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" style="color: var(--primary); text-decoration: none;">登入</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function showTab(tabId) {
+            // 切換頁籤邏輯
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>

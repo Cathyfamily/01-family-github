@@ -14,25 +14,37 @@
         <div class="logo">Family <span>Hub</span></div>
 
         <button class="nav-item active" id="nav-stocks" onclick="switchTab('stocks')">
-            <span class="icon">📈</span>
-            <span>股票管理</span>
+            <span class="icon">📈</span><span class="label">股票管理</span>
         </button>
         <button class="nav-item" id="nav-milestones" onclick="switchTab('milestones')">
-            <span class="icon">👶</span>
-            <span>成長紀錄</span>
+            <span class="icon">🧒</span><span class="label">成長紀錄</span>
         </button>
         <button class="nav-item" id="nav-recipes" onclick="switchTab('recipes')">
-            <span class="icon">🍳</span>
-            <span>美味食譜</span>
+            <span class="icon">🍳</span><span class="label">美味食譜</span>
         </button>
 
         <div class="nav-spacer"></div>
 
         <a href="{{ url_for('logout') }}" style="text-decoration:none;">
             <div class="nav-item logout-btn">
-                <span class="icon">🚪</span>
-                <span>登出</span>
+                <span class="icon">🚪</span><span class="label">登出</span>
             </div>
+        </a>
+    </nav>
+
+    <!-- Bottom Nav (iPhone) -->
+    <nav class="bottom-nav">
+        <button class="bottom-nav-item active" id="bnav-stocks" onclick="switchTab('stocks')">
+            <span class="icon">📈</span>股票
+        </button>
+        <button class="bottom-nav-item" id="bnav-milestones" onclick="switchTab('milestones')">
+            <span class="icon">🧒</span>成長
+        </button>
+        <button class="bottom-nav-item" id="bnav-recipes" onclick="switchTab('recipes')">
+            <span class="icon">🍳</span>食譜
+        </button>
+        <a href="{{ url_for('logout') }}" class="bottom-nav-item" style="text-decoration:none;">
+            <span class="icon">🚪</span>登出
         </a>
     </nav>
 
@@ -53,19 +65,22 @@
 
     <script>
         function switchTab(tabId) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            // Deactivate all nav items
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            // Show selected tab
-            document.getElementById(tabId).classList.add('active');
-            // Activate selected nav item
-            document.getElementById('nav-' + tabId).classList.add('active');
-            // Save to localStorage
+            document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
+
+            const tabEl = document.getElementById(tabId);
+            if (tabEl) tabEl.classList.add('active');
+
+            const sideNav = document.getElementById('nav-' + tabId);
+            if (sideNav) sideNav.classList.add('active');
+
+            const botNav = document.getElementById('bnav-' + tabId);
+            if (botNav) botNav.classList.add('active');
+
             localStorage.setItem('activeTab', tabId);
         }
 
-        // Restore last active tab or use URL param
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const tab = params.get('tab') || localStorage.getItem('activeTab') || 'stocks';

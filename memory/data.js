@@ -52,5 +52,11 @@ window.memoryData = [
     "description": "✨ 專案大升級：完成三裝置響應式介面與食譜功能優化",
     "details": "1. 改為純 HTML 離線版 index.html",
     "checkpoint_file": "checkpoint_20260430_164645.zip"
+  },
+  {
+    "timestamp": "2026-04-30 16:48:54",
+    "description": "🚀 準備部署：同步 Flask 後端欄位與響應式介面",
+    "details": "1. 更新 models.py 支援新食譜欄位",
+    "checkpoint_file": "checkpoint_20260430_164854.zip"
   }
 ];

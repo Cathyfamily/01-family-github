@@ -75,7 +75,12 @@ def add_milestone():
     image_url = request.form.get('image_url')
     
     date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-    new_milestone = Milestone(title=title, description=description, date=date_obj, image_url=image_url)
+    new_milestone = Milestone(
+        title=title, 
+        description=description, 
+        date=date_obj, 
+        image_url=image_url # 接收 Base64 格式
+    )
     db.session.add(new_milestone)
     db.session.commit()
     return redirect(url_for('index', tab='milestones'))
@@ -91,11 +96,24 @@ def delete_milestone(id):
 @app.route('/add_recipe', methods=['POST'])
 def add_recipe():
     name = request.form.get('name')
+    recipe_type = request.form.get('type')
     ingredients = request.form.get('ingredients')
+    utensils = request.form.get('utensils')
+    temp = request.form.get('temp')
+    time = request.form.get('time')
     instructions = request.form.get('instructions')
-    image_url = request.form.get('image_url')
+    image_url = request.form.get('image_url') # 接收 Base64 格式
     
-    new_recipe = Recipe(name=name, ingredients=ingredients, instructions=instructions, image_url=image_url)
+    new_recipe = Recipe(
+        name=name, 
+        type=recipe_type,
+        ingredients=ingredients, 
+        utensils=utensils,
+        temp=temp,
+        time=time,
+        instructions=instructions, 
+        image_url=image_url
+    )
     db.session.add(new_recipe)
     db.session.commit()
     return redirect(url_for('index', tab='recipes'))

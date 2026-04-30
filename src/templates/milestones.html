@@ -1,46 +1,93 @@
-<div class="card fade-in">
-    <h2>👶 成長里程紀錄 (Child Milestones)</h2>
-    <form action="{{ url_for('add_milestone') }}" method="POST" class="add-form">
-        <div class="form-group row">
-            <input type="text" name="title" placeholder="標題 (Title)" required>
-            <input type="date" name="date" required>
-        </div>
-        <div class="form-group">
-            <input type="url" name="image_url" placeholder="圖片網址 (Image URL) - 選填">
-        </div>
-        <div class="form-group">
-            <textarea name="description" placeholder="描述內容 (Description)" rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">新增里程碑</button>
-    </form>
+<div id="milestones" class="tab-content fade-in">
+    <div class="page-header">
+        <h1>🧒 成長紀錄</h1>
+        <p>記錄寶貝每一個珍貴時刻</p>
+    </div>
 
-    <div class="sort-control mt-4 text-right">
-        <label for="sort-milestones">排序方式: </label>
-        <select id="sort-milestones" class="sort-select" style="padding: 0.3rem; border-radius: 4px;">
-            <option value="date-desc">日期 (新到舊)</option>
-            <option value="date-asc">日期 (舊到新)</option>
+    <div class="section-card">
+        <div class="section-title">新增里程碑</div>
+        <form action="{{ url_for('add_milestone') }}" method="POST" id="milestone-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">里程碑標題</label>
+                    <input type="text" name="title" placeholder="例：第一次學會走路" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input type="date" name="date" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">選擇照片</label>
+                <input type="file" id="m-upload" accept="image/*">
+                <input type="hidden" name="image_url" id="m-img-data">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea name="description" rows="3" placeholder="記錄這個特別時刻..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">＋ 新增里程碑</button>
+        </form>
+    </div>
+
+    <div class="sort-bar">
+        排序：
+        <select id="sort-milestones" onchange="sortMilestones(this.value)">
+            <option value="date-desc">日期（新到舊）</option>
+            <option value="date-asc">日期（舊到新）</option>
         </select>
     </div>
 
-    <div class="grid-container mt-2" id="milestones-grid">
+    <div id="milestones-grid" class="grid">
         {% for milestone in milestones %}
-        <div class="grid-item milestone-item" data-date="{{ milestone.date.isoformat() }}">
+        <div class="grid-card milestone-item" data-date="{{ milestone.date.isoformat() }}">
             {% if milestone.image_url %}
             <div class="card-img" style="background-image: url('{{ milestone.image_url }}')"></div>
             {% else %}
-            <div class="card-img placeholder">📷 無圖片</div>
+            <div class="card-img">📷</div>
             {% endif %}
             <div class="card-body">
-                <h3>{{ milestone.title }}</h3>
                 <span class="date-badge">{{ milestone.date.strftime('%Y-%m-%d') }}</span>
-                <p>{{ milestone.description }}</p>
-                <form action="{{ url_for('delete_milestone', id=milestone.id) }}" method="POST" class="mt-2 text-right">
-                    <button type="submit" class="btn btn-danger btn-sm">刪除</button>
-                </form>
+                <h3>{{ milestone.title }}</h3>
+                <p>{{ milestone.description or '' }}</p>
+                <div class="card-actions">
+                    <form action="{{ url_for('delete_milestone', id=milestone.id) }}" method="POST" onsubmit="return confirm('確定要刪除嗎？')">
+                        <button type="submit" class="btn btn-danger">刪除</button>
+                    </form>
+                </div>
             </div>
         </div>
-        {% else %}
-        <p class="text-center col-span-full">尚無成長紀錄</p>
         {% endfor %}
     </div>
 </div>
+
+<script>
+    // Handle File Upload to Base64 before submit
+    document.getElementById('milestone-form').addEventListener('submit', async function(e) {
+        const fileInput = document.getElementById('m-upload');
+        const hiddenInput = document.getElementById('m-img-data');
+        
+        if (fileInput.files.length > 0) {
+            e.preventDefault();
+            const reader = new FileReader();
+            reader.readAsDataURL(fileInput.files[0]);
+            reader.onload = () => {
+                hiddenInput.value = reader.result;
+                this.submit();
+            };
+        }
+    });
+
+    function sortMilestones(mode) {
+        const grid = document.getElementById('milestones-grid');
+        const items = Array.from(grid.getElementsByClassName('milestone-item'));
+        
+        items.sort((a, b) => {
+            if (mode === 'date-desc') return new Date(b.dataset.date) - new Date(a.dataset.date);
+            if (mode === 'date-asc') return new Date(a.dataset.date) - new Date(b.dataset.date);
+            return 0;
+        });
+        
+        items.forEach(item => grid.appendChild(item));
+    }
+</script>

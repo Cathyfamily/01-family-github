@@ -1,49 +1,132 @@
-<div class="card fade-in">
-    <h2>🍳 食譜管理 (Recipes)</h2>
-    <form action="{{ url_for('add_recipe') }}" method="POST" class="add-form">
-        <div class="form-group row">
-            <input type="text" name="name" placeholder="食譜名稱 (Recipe Name)" required>
-            <input type="url" name="image_url" placeholder="圖片網址 (Image URL) - 選填">
-        </div>
-        <div class="form-group">
-            <textarea name="ingredients" placeholder="食材清單 (Ingredients)" rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-            <textarea name="instructions" placeholder="料理步驟 (Instructions)" rows="4" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">新增食譜</button>
-    </form>
+<div id="recipes" class="tab-content fade-in">
+    <div class="page-header">
+        <h1>🍳 美味食譜</h1>
+        <p>收藏家中的私房料理</p>
+    </div>
 
-    <div class="sort-control mt-4 text-right">
-        <label for="sort-recipes">排序方式: </label>
-        <select id="sort-recipes" class="sort-select" style="padding: 0.3rem; border-radius: 4px;">
-            <option value="time-desc">建立時間 (新到舊)</option>
-            <option value="time-asc">建立時間 (舊到新)</option>
-            <option value="name-asc">名稱 (筆畫/A-Z)</option>
+    <div class="section-card">
+        <div class="section-title">新增食譜</div>
+        <form action="{{ url_for('add_recipe') }}" method="POST" id="recipe-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">食譜名稱</label>
+                    <input type="text" name="name" placeholder="例：媽媽的紅燒肉" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">食材分類</label>
+                    <input type="text" name="type" list="type-list" placeholder="例：豬肉">
+                    <datalist id="type-list">
+                        <option value="豬肉"><option value="牛肉"><option value="羊肉"><option value="雞肉"><option value="海鮮"><option value="蔬菜"><option value="甜點"><option value="其他">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">選擇照片</label>
+                    <input type="file" id="r-upload" accept="image/*">
+                    <input type="hidden" name="image_url" id="r-img-data">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">使用器具</label>
+                    <input type="text" name="utensils" list="utensils-list" placeholder="例：氣炸鍋">
+                    <datalist id="utensils-list">
+                        <option value="氣炸鍋"><option value="烤箱"><option value="電鍋"><option value="平底鍋"><option value="壓力鍋"><option value="微波爐">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹調溫度</label>
+                    <input type="text" name="temp" list="temp-list" placeholder="例：180°C">
+                    <datalist id="temp-list">
+                        <option value="160°C"><option value="180°C"><option value="200°C"><option value="大火"><option value="中火"><option value="小火">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹調時間</label>
+                    <input type="text" name="time" placeholder="例：15 分鐘">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">食材內容</label>
+                <textarea name="ingredients" rows="3" placeholder="豬五花 600g&#10;醬油 3匙..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">料理步驟</label>
+                <textarea name="instructions" rows="4" placeholder="1. 豬肉切塊&#10;2. 熱鍋下油..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">＋ 新增食譜</button>
+        </form>
+    </div>
+
+    <div class="sort-bar">
+        排序：
+        <select id="sort-recipes" onchange="sortRecipes(this.value)">
+            <option value="time-desc">建立時間（新到舊）</option>
+            <option value="time-asc">建立時間（舊到新）</option>
+            <option value="name-asc">名稱（A→Z）</option>
+            <option value="type-asc">食材類型</option>
         </select>
     </div>
 
-    <div class="grid-container mt-2" id="recipes-grid">
+    <div id="recipes-grid" class="grid">
         {% for recipe in recipes %}
-        <div class="grid-item recipe-item" data-time="{{ recipe.created_at.isoformat() }}" data-name="{{ recipe.name }}">
+        <div class="grid-card recipe-item" data-time="{{ recipe.created_at.isoformat() }}" data-name="{{ recipe.name }}" data-type="{{ recipe.type or '' }}">
             {% if recipe.image_url %}
             <div class="card-img" style="background-image: url('{{ recipe.image_url }}')"></div>
             {% else %}
-            <div class="card-img placeholder">🍲 無圖片</div>
+            <div class="card-img">🍲</div>
             {% endif %}
             <div class="card-body">
                 <h3>{{ recipe.name }}</h3>
-                <h4>食材:</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem;">
+                    {% if recipe.type %}<span class="date-badge" style="background:#f3f4f6; color:#374151;">📂 {{ recipe.type }}</span>{% endif %}
+                    {% if recipe.utensils %}<span class="date-badge" style="background:#fff7ed; color:#9a3412;">🛠️ {{ recipe.utensils }}</span>{% endif %}
+                    {% if recipe.temp %}<span class="date-badge" style="background:#fef2f2; color:#991b1b;">🔥 {{ recipe.temp }}</span>{% endif %}
+                    {% if recipe.time %}<span class="date-badge" style="background:#f0f9ff; color:#075985;">⏱️ {{ recipe.time }}</span>{% endif %}
+                </div>
+                <p style="font-size:0.78rem; font-weight:700; color:var(--dim); margin:0.5rem 0 0.2rem;">食材內容</p>
                 <p class="pre-line">{{ recipe.ingredients }}</p>
-                <h4>步驟:</h4>
+                <p style="font-size:0.78rem; font-weight:700; color:var(--dim); margin:0.75rem 0 0.2rem;">料理步驟</p>
                 <p class="pre-line">{{ recipe.instructions }}</p>
-                <form action="{{ url_for('delete_recipe', id=recipe.id) }}" method="POST" class="mt-2 text-right">
-                    <button type="submit" class="btn btn-danger btn-sm">刪除</button>
-                </form>
+                <div class="card-actions">
+                    <form action="{{ url_for('delete_recipe', id=recipe.id) }}" method="POST" onsubmit="return confirm('確定要刪除嗎？')">
+                        <button type="submit" class="btn btn-danger">刪除</button>
+                    </form>
+                </div>
             </div>
         </div>
-        {% else %}
-        <p class="text-center col-span-full">尚無食譜紀錄</p>
         {% endfor %}
     </div>
 </div>
+
+<script>
+    // Handle File Upload to Base64 before submit
+    document.getElementById('recipe-form').addEventListener('submit', async function(e) {
+        const fileInput = document.getElementById('r-upload');
+        const hiddenInput = document.getElementById('r-img-data');
+        
+        if (fileInput.files.length > 0) {
+            e.preventDefault();
+            const reader = new FileReader();
+            reader.readAsDataURL(fileInput.files[0]);
+            reader.onload = () => {
+                hiddenInput.value = reader.result;
+                this.submit();
+            };
+        }
+    });
+
+    function sortRecipes(mode) {
+        const grid = document.getElementById('recipes-grid');
+        const items = Array.from(grid.getElementsByClassName('recipe-item'));
+        
+        items.sort((a, b) => {
+            if (mode === 'time-desc') return new Date(b.dataset.time) - new Date(a.dataset.time);
+            if (mode === 'time-asc') return new Date(a.dataset.time) - new Date(b.dataset.time);
+            if (mode === 'name-asc') return a.dataset.name.localeCompare(b.dataset.name, 'zh-TW');
+            if (mode === 'type-asc') return a.dataset.type.localeCompare(b.dataset.type, 'zh-TW');
+            return 0;
+        });
+        
+        items.forEach(item => grid.appendChild(item));
+    }
+</script>

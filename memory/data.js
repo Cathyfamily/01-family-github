@@ -88,5 +88,11 @@ const memoryData = [
     "description": "",
     "details": "無詳細說明",
     "checkpoint_file": "checkpoint_20260430_152152.zip"
+  },
+  {
+    "timestamp": "2026-04-30 15:22:47",
+    "description": "讓資料夾精簡，以及修改資料夾檔名",
+    "details": "無詳細說明",
+    "checkpoint_file": "checkpoint_20260430_152247.zip"
   }
 ];

@@ -64,5 +64,11 @@ window.memoryData = [
     "description": "增加登入密碼頁面與 PythonAnywhere 佈署指南",
     "details": "1. 將登入密碼設定為 09150915。2. 產出 family_app.zip 壓縮檔。3. 撰寫詳細的 PythonAnywhere 手動佈署教學文件。",
     "checkpoint_file": "checkpoint_20260507_1605.zip"
+  },
+  {
+    "timestamp": "2026-05-07 16:24:31",
+    "description": "完成登入保護與佈署準備",
+    "details": "已整合密碼頁面 (09150915) 並完成 PythonAnywhere 佈署指南。",
+    "checkpoint_file": "checkpoint_20260507_162431.zip"
   }
 ];

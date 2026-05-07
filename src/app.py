@@ -16,7 +16,7 @@ with app.app_context():
     db.create_all()
 
 # --- Authentication ---
-APP_PASSWORD = 'family123'  # 預設單一登入密碼
+APP_PASSWORD = '09150915'  # 預設單一登入密碼
 
 @app.before_request
 def require_login():

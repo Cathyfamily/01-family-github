@@ -58,5 +58,11 @@ window.memoryData = [
     "description": "🚀 準備部署：同步 Flask 後端欄位與響應式介面",
     "details": "1. 更新 models.py 支援新食譜欄位",
     "checkpoint_file": "checkpoint_20260430_164854.zip"
+  },
+  {
+    "timestamp": "2026-05-07 16:05:00",
+    "description": "增加登入密碼頁面與 PythonAnywhere 佈署指南",
+    "details": "1. 將登入密碼設定為 09150915。2. 產出 family_app.zip 壓縮檔。3. 撰寫詳細的 PythonAnywhere 手動佈署教學文件。",
+    "checkpoint_file": "checkpoint_20260507_1605.zip"
   }
 ];

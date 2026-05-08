@@ -12,7 +12,7 @@ CHECKPOINTS_DIR = os.path.join(MEMORY_DIR, 'checkpoints')
 DATA_JS = os.path.join(MEMORY_DIR, 'data.js')
 LOG_MD = os.path.join(MEMORY_DIR, 'LOG.md')
 README_MD = os.path.join(BASE_DIR, 'README.md')
-ROOT_ZIP = os.path.join(BASE_DIR, 'family_app.zip')
+ROOT_ZIP = os.path.join(BASE_DIR, '01-family.zip')
 
 def run_command(cmd, cwd=BASE_DIR):
     result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
@@ -23,7 +23,7 @@ def run_command(cmd, cwd=BASE_DIR):
     return True
 
 def create_root_zip():
-    print("正在打包專案 (family_app.zip)...")
+    print("正在打包專案 (01-family.zip)...")
     # 建立一個臨時資料夾來打包，避免把 zip 自己也包進去
     temp_dir = os.path.join(BASE_DIR, 'temp_package')
     if os.path.exists(temp_dir):

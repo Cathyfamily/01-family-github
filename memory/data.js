@@ -82,5 +82,11 @@ window.memoryData = [
     "description": "清理專案多餘檔案並優化佈署流程",
     "details": "1. 移除冗餘檔案 2. 優化 PythonAnywhere 指南 3. 自動生成 family_app.zip",
     "checkpoint_file": "checkpoint_20260508_160813.zip"
+  },
+  {
+    "timestamp": "2026-05-08 16:13:16",
+    "description": "更名佈署包為 01-family.zip 並同步更新指南",
+    "details": "1. 修正 ZIP 檔名為 01-family.zip 2. 更新指南中的路徑為 01-family 3. 確保手動教學更精確",
+    "checkpoint_file": "checkpoint_20260508_161316.zip"
   }
 ];

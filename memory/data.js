@@ -76,5 +76,11 @@ window.memoryData = [
     "description": "🎨 網頁排版同步更新：Flask 介面與 index.html 統一",
     "details": "1. 更新 style.css 與 index.html 排版同步。2. 食譜新增食材分類、器具、溫度、時間欄位。3. 成長紀錄支援 Base64 圖片上傳。4. 新增專案記錄簿按鈕。5. 登入頁面樣式統一。",
     "checkpoint_file": "checkpoint_20260508_151000.zip"
+  },
+  {
+    "timestamp": "2026-05-08 16:08:13",
+    "description": "清理專案多餘檔案並優化佈署流程",
+    "details": "1. 移除冗餘檔案 2. 優化 PythonAnywhere 指南 3. 自動生成 family_app.zip",
+    "checkpoint_file": "checkpoint_20260508_160813.zip"
   }
 ];

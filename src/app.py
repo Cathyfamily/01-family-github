@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
 
 from models import db, Stock, Milestone, Recipe
 from datetime import datetime
@@ -7,6 +7,7 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-key-for-session'
 basedir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.dirname(basedir)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -17,6 +18,11 @@ with app.app_context():
 
 # --- Authentication ---
 APP_PASSWORD = '09150915'  # 預設單一登入密碼
+
+@app.route('/memory/<path:path>')
+def serve_memory(path):
+    memory_dir = os.path.join(project_root, 'memory')
+    return send_from_directory(memory_dir, path)
 
 @app.before_request
 def require_login():

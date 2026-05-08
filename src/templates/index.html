@@ -3,12 +3,10 @@
 {% block content %}
 
 <!-- ── 股票管理 ── -->
-<div id="stocks" class="tab-content">
+<div id="stocks" class="tab-content active">
     <div class="page-header">
-        <div>
-            <h1>📈 股票管理</h1>
-            <p>記錄您的持股狀況</p>
-        </div>
+        <h1>📈 股票管理</h1>
+        <p>記錄您的持股狀況</p>
     </div>
 
     <div class="section-card">
@@ -38,57 +36,57 @@
 
     <div class="section-card">
         <div class="sort-bar">
-            <span>排序：</span>
+            排序：
             <select id="sort-stocks" onchange="sortStocks(this.value)">
                 <option value="time-desc">新增時間 (新到舊)</option>
                 <option value="time-asc">新增時間 (舊到新)</option>
             </select>
         </div>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>代號</th>
-                    <th>名稱</th>
-                    <th>股數</th>
-                    <th>買入價格</th>
-                    <th>新增日期</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody id="stocks-tbody">
-                {% for stock in stocks %}
-                <tr class="stock-item" data-time="{{ stock.date_added.isoformat() }}">
-                    <td><span class="stock-symbol">{{ stock.symbol }}</span></td>
-                    <td>{{ stock.name }}</td>
-                    <td>{{ stock.shares }}</td>
-                    <td>${{ stock.purchase_price }}</td>
-                    <td>{{ stock.date_added.strftime('%Y-%m-%d') }}</td>
-                    <td>
-                        <form action="{{ url_for('delete_stock', id=stock.id) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger">刪除</button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="6" class="empty-state">尚無持股紀錄，請新增您的第一筆！</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>代號</th>
+                        <th>名稱</th>
+                        <th>股數</th>
+                        <th>買入價格</th>
+                        <th>新增日期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="stocks-tbody">
+                    {% for stock in stocks %}
+                    <tr class="stock-item" data-time="{{ stock.date_added.isoformat() }}">
+                        <td><span class="stock-symbol">{{ stock.symbol }}</span></td>
+                        <td>{{ stock.name }}</td>
+                        <td>{{ stock.shares }}</td>
+                        <td>${{ stock.purchase_price }}</td>
+                        <td>{{ stock.date_added.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_stock', id=stock.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">刪除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6"><div class="empty"><span class="emoji">📊</span>尚無持股紀錄，請新增您的第一筆！</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <!-- ── 成長紀錄 ── -->
 <div id="milestones" class="tab-content">
     <div class="page-header">
-        <div>
-            <h1>👶 成長紀錄</h1>
-            <p>記錄孩子每個珍貴的里程碑</p>
-        </div>
+        <h1>🧒 成長紀錄</h1>
+        <p>記錄孩子每個珍貴的里程碑</p>
     </div>
 
     <div class="section-card">
         <div class="section-title">新增里程碑</div>
-        <form action="{{ url_for('add_milestone') }}" method="POST">
+        <form action="{{ url_for('add_milestone') }}" method="POST" id="milestone-form">
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">標題</label>
@@ -99,38 +97,37 @@
                     <input type="date" name="date" required>
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label class="form-label">圖片網址 (選填)</label>
-                <input type="url" name="image_url" placeholder="https://...">
+            <div class="form-group">
+                <label class="form-label">選擇照片</label>
+                <input type="file" accept="image/*" id="m-file-input">
+                <input type="hidden" name="image_url" id="m-image-base64">
             </div>
-            <div class="form-group" style="margin-bottom: 0.75rem;">
+            <div class="form-group">
                 <label class="form-label">描述</label>
-                <textarea name="description" placeholder="記錄這個特別時刻..."></textarea>
+                <textarea name="description" rows="3" placeholder="記錄這個特別時刻..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">＋ 新增里程碑</button>
         </form>
     </div>
 
     <div class="sort-bar">
-        <span>排序：</span>
+        排序：
         <select id="sort-milestones" onchange="sortMilestones(this.value)">
             <option value="date-desc">日期 (新到舊)</option>
             <option value="date-asc">日期 (舊到新)</option>
         </select>
     </div>
 
-    <div class="grid-container" id="milestones-grid">
+    <div id="milestones-grid" class="grid">
         {% for milestone in milestones %}
-        <div class="grid-item milestone-item" data-date="{{ milestone.date.isoformat() }}">
-            {% if milestone.image_url %}
-            <div class="card-img" style="background-image: url('{{ milestone.image_url }}')"></div>
-            {% else %}
-            <div class="card-img placeholder">📷</div>
-            {% endif %}
+        <div class="grid-card milestone-item" data-date="{{ milestone.date.isoformat() }}">
+            <div class="card-img" {% if milestone.image_url %}style="background-image: url('{{ milestone.image_url }}')"{% endif %}>
+                {% if not milestone.image_url %}📷{% endif %}
+            </div>
             <div class="card-body">
                 <span class="date-badge">{{ milestone.date.strftime('%Y-%m-%d') }}</span>
                 <h3>{{ milestone.title }}</h3>
-                <p>{{ milestone.description }}</p>
+                <p class="pre-line">{{ milestone.description }}</p>
                 <div class="card-actions">
                     <form action="{{ url_for('delete_milestone', id=milestone.id) }}" method="POST">
                         <button type="submit" class="btn btn-danger">刪除</button>
@@ -139,7 +136,7 @@
             </div>
         </div>
         {% else %}
-        <p class="empty-state">尚無成長紀錄，記錄第一個里程碑吧！</p>
+        <div class="empty" style="grid-column: 1/-1;"><span class="emoji">🧒</span>尚無成長紀錄，記錄第一個里程碑吧！</div>
         {% endfor %}
     </div>
 </div>
@@ -147,39 +144,68 @@
 <!-- ── 食譜管理 ── -->
 <div id="recipes" class="tab-content">
     <div class="page-header">
-        <div>
-            <h1>🍳 美味食譜</h1>
-            <p>收藏家中的私房料理</p>
-        </div>
+        <h1>🍳 美味食譜</h1>
+        <p>收藏家中的私房料理</p>
     </div>
 
     <div class="section-card">
         <div class="section-title">新增食譜</div>
-        <form action="{{ url_for('add_recipe') }}" method="POST">
+        <form action="{{ url_for('add_recipe') }}" method="POST" id="recipe-form">
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">食譜名稱</label>
                     <input type="text" name="name" placeholder="例：媽媽的紅燒肉" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">圖片網址 (選填)</label>
-                    <input type="url" name="image_url" placeholder="https://...">
+                    <label class="form-label">食材分類</label>
+                    <input type="text" name="type" list="type-list" placeholder="例：豬肉">
+                    <datalist id="type-list">
+                        <option value="豬肉"><option value="牛肉"><option value="羊肉"><option value="雞肉">
+                        <option value="海鮮"><option value="蔬菜"><option value="甜點"><option value="其他">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">選擇照片</label>
+                    <input type="file" accept="image/*" id="r-file-input">
+                    <input type="hidden" name="image_url" id="r-image-base64">
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label class="form-label">食材清單</label>
-                <textarea name="ingredients" placeholder="豬五花 600g&#10;醬油 3匙&#10;..." required></textarea>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">使用器具</label>
+                    <input type="text" name="utensils" list="utensils-list" placeholder="例：氣炸鍋">
+                    <datalist id="utensils-list">
+                        <option value="氣炸鍋"><option value="烤箱"><option value="電鍋">
+                        <option value="平底鍋"><option value="壓力鍋"><option value="微波爐">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹調溫度</label>
+                    <input type="text" name="temp" list="temp-list" placeholder="例：180°C">
+                    <datalist id="temp-list">
+                        <option value="160°C"><option value="180°C"><option value="200°C">
+                        <option value="大火"><option value="中火"><option value="小火">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">烹調時間</label>
+                    <input type="text" name="time" placeholder="例：15 分鐘">
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom: 0.75rem;">
+            <div class="form-group">
+                <label class="form-label">食材內容</label>
+                <textarea name="ingredients" rows="3" placeholder="豬五花 600g&#10;醬油 3匙..." required></textarea>
+            </div>
+            <div class="form-group">
                 <label class="form-label">料理步驟</label>
-                <textarea name="instructions" placeholder="1. 豬肉切塊&#10;2. 熱鍋下油..." rows="4" required></textarea>
+                <textarea name="instructions" rows="4" placeholder="1. 豬肉切塊&#10;2. 熱鍋下油..." required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">＋ 新增食譜</button>
         </form>
     </div>
 
     <div class="sort-bar">
-        <span>排序：</span>
+        排序：
         <select id="sort-recipes" onchange="sortRecipes(this.value)">
             <option value="time-desc">建立時間 (新到舊)</option>
             <option value="time-asc">建立時間 (舊到新)</option>
@@ -187,20 +213,25 @@
         </select>
     </div>
 
-    <div class="grid-container" id="recipes-grid">
+    <div id="recipes-grid" class="grid">
         {% for recipe in recipes %}
-        <div class="grid-item recipe-item" data-time="{{ recipe.created_at.isoformat() }}" data-name="{{ recipe.name }}">
-            {% if recipe.image_url %}
-            <div class="card-img" style="background-image: url('{{ recipe.image_url }}')"></div>
-            {% else %}
-            <div class="card-img placeholder">🍲</div>
-            {% endif %}
+        <div class="grid-card recipe-item" data-time="{{ recipe.created_at.isoformat() }}" data-name="{{ recipe.name }}">
+            <div class="card-img" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}')"{% endif %}>
+                {% if not recipe.image_url %}🍲{% endif %}
+            </div>
             <div class="card-body">
+                <span class="date-badge">{{ recipe.type or '未分類' }}</span>
                 <h3>{{ recipe.name }}</h3>
-                <p style="font-size:0.8rem; font-weight:600; color: var(--text-dim); margin: 0.5rem 0 0.25rem;">食材</p>
-                <p class="pre-line">{{ recipe.ingredients }}</p>
-                <p style="font-size:0.8rem; font-weight:600; color: var(--text-dim); margin: 0.75rem 0 0.25rem;">步驟</p>
-                <p class="pre-line">{{ recipe.instructions }}</p>
+                
+                <div style="font-size:0.8rem; color: var(--dim); margin-bottom: 0.5rem;">
+                    {% if recipe.utensils %}<span>器具：{{ recipe.utensils }}</span> | {% endif %}
+                    {% if recipe.temp %}<span>溫度：{{ recipe.temp }}</span> | {% endif %}
+                    {% if recipe.time %}<span>時間：{{ recipe.time }}</span>{% endif %}
+                </div>
+
+                <p class="pre-line" style="margin-bottom: 0.5rem;"><strong>食材：</strong><br>{{ recipe.ingredients }}</p>
+                <p class="pre-line"><strong>步驟：</strong><br>{{ recipe.instructions }}</p>
+                
                 <div class="card-actions">
                     <form action="{{ url_for('delete_recipe', id=recipe.id) }}" method="POST">
                         <button type="submit" class="btn btn-danger">刪除</button>
@@ -209,7 +240,7 @@
             </div>
         </div>
         {% else %}
-        <p class="empty-state">尚無食譜，新增您的第一道料理吧！</p>
+        <div class="empty" style="grid-column: 1/-1;"><span class="emoji">🍳</span>尚無食譜，新增您的第一道料理吧！</div>
         {% endfor %}
     </div>
 </div>
@@ -218,9 +249,35 @@
 
 {% block scripts %}
 <script>
+// File to Base64 helper
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        if (!file) { resolve(''); return; }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// Handle Milestone Image
+document.getElementById('m-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    const base64 = await fileToBase64(file);
+    document.getElementById('m-image-base64').value = base64;
+});
+
+// Handle Recipe Image
+document.getElementById('r-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    const base64 = await fileToBase64(file);
+    document.getElementById('r-image-base64').value = base64;
+});
+
 function sortStocks(mode) {
     const tbody = document.getElementById('stocks-tbody');
     const rows = Array.from(tbody.querySelectorAll('.stock-item'));
+    if (!rows.length) return;
     rows.sort((a, b) => {
         const at = new Date(a.dataset.time), bt = new Date(b.dataset.time);
         return mode === 'time-asc' ? at - bt : bt - at;
@@ -231,6 +288,7 @@ function sortStocks(mode) {
 function sortMilestones(mode) {
     const grid = document.getElementById('milestones-grid');
     const items = Array.from(grid.querySelectorAll('.milestone-item'));
+    if (!items.length) return;
     items.sort((a, b) => {
         const ad = new Date(a.dataset.date), bd = new Date(b.dataset.date);
         return mode === 'date-asc' ? ad - bd : bd - ad;
@@ -241,6 +299,7 @@ function sortMilestones(mode) {
 function sortRecipes(mode) {
     const grid = document.getElementById('recipes-grid');
     const items = Array.from(grid.querySelectorAll('.recipe-item'));
+    if (!items.length) return;
     items.sort((a, b) => {
         if (mode === 'name-asc') return a.dataset.name.localeCompare(b.dataset.name, 'zh-TW');
         const at = new Date(a.dataset.time), bt = new Date(b.dataset.time);

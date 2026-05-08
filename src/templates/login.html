@@ -3,48 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入 - FamilyHQ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>登入 - Family Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        .login-container {
+        body {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            padding: 1rem;
+            margin: 0;
+            background: var(--bg);
         }
         .login-card {
             max-width: 400px;
             width: 100%;
             text-align: center;
+            animation: fadeUp 0.5s ease;
         }
-        .mb-4 { margin-bottom: 1.5rem; }
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+        .login-logo span { color: var(--dim); font-weight: 400; }
+        .login-subtitle {
+            color: var(--dim);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="card login-card fade-in">
-            <h1 class="logo mb-4" style="font-size: 2.5rem;">FamilyHQ</h1>
-            <p class="text-muted mb-4">請輸入專屬密碼以存取家庭資料</p>
-            
-            {% with messages = get_flashed_messages() %}
-              {% if messages %}
-                <div style="color: var(--danger); margin-bottom: 1rem; font-weight: 500;">
-                {% for message in messages %}
-                  {{ message }}
-                {% endfor %}
-                </div>
-              {% endif %}
-            {% endwith %}
+    <div class="section-card login-card">
+        <div class="login-logo">Family <span>Hub</span></div>
+        <p class="login-subtitle">請輸入密碼以存取家庭資料</p>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div style="color: var(--danger); margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 600;">
+            {% for message in messages %}
+              ⚠️ {{ message }}
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
 
-            <form action="{{ url_for('login') }}" method="POST">
-                <div class="form-group">
-                    <input type="password" name="password" placeholder="請輸入密碼" required autofocus>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%">安全登入</button>
-            </form>
-        </div>
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">安全密碼</label>
+                <input type="password" name="password" placeholder="請輸入密碼" required autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">安全登入</button>
+        </form>
     </div>
 </body>
 </html>

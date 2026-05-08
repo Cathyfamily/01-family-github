@@ -14,20 +14,25 @@
         <div class="logo">Family <span>Hub</span></div>
 
         <button class="nav-item active" id="nav-stocks" onclick="switchTab('stocks')">
-            <span class="icon">📈</span><span class="label">股票管理</span>
+            📈 <span class="label">股票管理</span>
         </button>
         <button class="nav-item" id="nav-milestones" onclick="switchTab('milestones')">
-            <span class="icon">🧒</span><span class="label">成長紀錄</span>
+            🧒 <span class="label">成長紀錄</span>
         </button>
         <button class="nav-item" id="nav-recipes" onclick="switchTab('recipes')">
-            <span class="icon">🍳</span><span class="label">美味食譜</span>
+            🍳 <span class="label">美味食譜</span>
         </button>
 
         <div class="nav-spacer"></div>
 
+        <!-- 專案記錄簿按鈕 (呼叫外部指令或開啟本地檔案) -->
+        <button class="nav-item" onclick="window.open('/memory/notes.html')">
+            📔 <span class="label">專案記錄簿</span>
+        </button>
+
         <a href="{{ url_for('logout') }}" style="text-decoration:none;">
             <div class="nav-item logout-btn">
-                <span class="icon">🚪</span><span class="label">登出</span>
+                🚪 <span class="label">登出</span>
             </div>
         </a>
     </nav>

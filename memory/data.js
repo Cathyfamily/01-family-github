@@ -70,5 +70,11 @@ window.memoryData = [
     "description": "完成登入保護與佈署準備",
     "details": "已整合密碼頁面 (09150915) 並完成 PythonAnywhere 佈署指南。",
     "checkpoint_file": "checkpoint_20260507_162431.zip"
+  },
+  {
+    "timestamp": "2026-05-08 15:10:00",
+    "description": "🎨 網頁排版同步更新：Flask 介面與 index.html 統一",
+    "details": "1. 更新 style.css 與 index.html 排版同步。2. 食譜新增食材分類、器具、溫度、時間欄位。3. 成長紀錄支援 Base64 圖片上傳。4. 新增專案記錄簿按鈕。5. 登入頁面樣式統一。",
+    "checkpoint_file": "checkpoint_20260508_151000.zip"
   }
 ];

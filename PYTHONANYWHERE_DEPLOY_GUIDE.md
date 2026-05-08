@@ -1,6 +1,6 @@
-# PythonAnywhere 手動佈署教學 (FamilyHQ)
+# PythonAnywhere 手動佈署教學 (Family Hub)
 
-這份文件將引導您如何將 `family_app.zip` 上傳並佈署到 PythonAnywhere。
+這份文件將引導您如何將 `01-family.zip` 上傳並佈署到 PythonAnywhere。
 
 ---
 
@@ -8,17 +8,20 @@
 
 1.  登入 [PythonAnywhere](https://www.pythonanywhere.com/)。
 2.  點擊右上角的 **"Files"**。
-3.  在 **"Upload a file"** 區塊，選擇您電腦中的 `family_app.zip` 並上傳。
+3.  在 **"Upload a file"** 區塊，選擇您電腦中的 `01-family.zip` 並上傳。
 4.  點擊右上角的 **"Consoles"**，開啟一個 **"Bash"** 控制台。
 5.  在控制台輸入以下指令來解壓縮（假設您上傳到根目錄）：
     ```bash
-    unzip family_app.zip -d my_family_app
+    unzip -o 01-family.zip -d 01-family
     ```
-    *這會建立一個 `my_family_app` 資料夾並將內容解壓進去。*
+    *這會建立一個 `01-family` 資料夾並將內容解壓進去。*
+    *`-o` 參數表示覆蓋已存在的檔案（更新時使用）。*
 
 ---
 
 ## 步驟 2：建立虛擬環境與安裝套件
+
+> ⚠️ **首次佈署才需要執行此步驟。** 更新時可跳過直接到步驟 5。
 
 在同一個 Bash 控制台中，執行以下指令：
 
@@ -28,13 +31,15 @@
     ```
 2.  **安裝必要套件**：
     ```bash
-    cd ~/my_family_app
-    pip install -r src/requirements.txt
+    cd ~/01-family
+    pip install -r requirements.txt
     ```
 
 ---
 
 ## 步驟 3：設定 Web App
+
+> ⚠️ **首次佈署才需要執行此步驟。**
 
 1.  回首頁，點擊右上角的 **"Web"** 標籤。
 2.  點擊 **"Add a new web app"**。
@@ -42,13 +47,15 @@
     *   Select a Python Web framework: 選擇 **"Manual configuration"** (這很重要，不要選 Flask)。
     *   Select a Python version: 選擇 **"Python 3.10"**。
 3.  **進入 Web App 設定頁面後，修改以下欄位：**
-    *   **Source code:** `/home/你的帳號/my_family_app/src`
-    *   **Working directory:** `/home/你的帳號/my_family_app/src`
+    *   **Source code:** `/home/你的帳號/01-family`
+    *   **Working directory:** `/home/你的帳號/01-family`
     *   **Virtualenv:** `/home/你的帳號/.virtualenvs/family-venv`
 
 ---
 
 ## 步驟 4：設定 WSGI 檔案 (最關鍵的一步)
+
+> ⚠️ **首次佈署才需要執行此步驟。**
 
 1.  在 Web 頁面的 "Code" 區塊，找到 **"WSGI configuration file"** 的連結並點擊進去。
 2.  刪除裡面的所有內容，並貼上以下代碼：
@@ -57,8 +64,8 @@
 import sys
 import os
 
-# 指向你的 src 資料夾
-path = '/home/你的帳號/my_family_app/src'
+# 指向你的 01-family 資料夾
+path = '/home/你的帳號/01-family'
 if path not in sys.path:
     sys.path.append(path)
 
@@ -81,8 +88,23 @@ from app import app as application
 
 ---
 
+## 更新佈署（每次修改後）
+
+當您在本機修改完程式碼後，只需重複以下步驟：
+
+1.  在本機重新打包 `01-family.zip`。
+2.  到 PythonAnywhere **"Files"** 上傳新的 `01-family.zip`。
+3.  開啟 **"Bash"** 控制台，輸入：
+    ```bash
+    unzip -o 01-family.zip -d 01-family
+    ```
+4.  回到 **"Web"** 頁面，點擊 **"Reload"**。
+5.  重新整理您的網站即可看到更新。
+
+---
+
 ## 疑難排解
 
 *   如果出現 "Internal Server Error"，請查看 Web 頁面下方的 **"Error log"**。
-*   確保 `src/database.db` 在 PythonAnywhere 上有寫入權限 (通常預設即可)。
+*   確保 `database.db` 在 PythonAnywhere 上有寫入權限 (通常預設即可)。
 *   如果有修改代碼，每次修改後都必須在 Web 頁面點擊 **"Reload"**。

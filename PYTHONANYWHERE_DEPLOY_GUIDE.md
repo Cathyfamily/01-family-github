@@ -26,7 +26,7 @@
 1.  在 Bash 控制台中執行：
     ```bash
     mkvirtualenv --python=/usr/bin/python3.10 family-venv
-    pip install -r ~/my_family_app/src/requirements.txt
+    pip install -r ~/01-family/src/requirements.txt
     ```
 
 ---
